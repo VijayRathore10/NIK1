@@ -1,0 +1,802 @@
+{
+  "categories": [
+    {
+      "_id": "73ed16f5-7d83-4d2d-aca7-a5929aef3ab7",
+      "title": "TRUCKS",
+      "slug": "trucks",
+      "image": "https://cdn.sanity.io/images/a3wpvljs/production/400a26ab66c4e33e49844bfd9a24cd61d3dcb784-1080x1350.png",
+      "order": 0
+    },
+    {
+      "_id": "393c9bdc-c25f-4a70-aa83-c45d3516a006",
+      "title": "BUSES",
+      "slug": "buses",
+      "image": "https://cdn.sanity.io/images/a3wpvljs/production/986afc6edb74023c3b53659e9af20dc67a75c495-1792x2400.png",
+      "order": 1
+    },
+    {
+      "_id": "bd8927f8-8abe-4c7d-85bf-38b6e412fbc0",
+      "title": "MACHINERIES",
+      "slug": "machineries",
+      "image": "https://cdn.sanity.io/images/a3wpvljs/production/b4ffa33643b24c3b8cec6759565e1ad2823b5c90-307x222.png",
+      "order": 2
+    },
+    {
+      "_id": "3ba1fa5d-5f66-47b2-a918-6d6d7aaa1afd",
+      "title": "AGRICULTURE",
+      "slug": "agriculture",
+      "image": "https://cdn.sanity.io/images/a3wpvljs/production/ba6661b93d7e054052976356ba30a53b19920d48-1856x2304.png",
+      "order": 3
+    }
+  ],
+  "products": [
+    {
+      "_id": "ea7e068d-afef-45a3-9ae9-5b4ed0ba7029",
+      "name": "JCB 3DX",
+      "slug": "jcb-3dx",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/21e3cd6c4ab13b76a7ca2366d36a1bff8615595d-1600x1200.jpg",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/21e3cd6c4ab13b76a7ca2366d36a1bff8615595d-1600x1200.jpg"
+      ],
+      "highlights": [
+        "76HP",
+        "Depth: 4.77m",
+        "Loader: 1.1m3",
+        "4WD"
+      ],
+      "specifications": [
+        {
+          "label": "Engine",
+          "value": "JCB 448, 4-cylinder, 56 kW (76 hp)"
+        },
+        {
+          "label": "Transmission",
+          "value": "Transmission JCB synchro shuttle, 4-speed full synchromesh, integral torque converter, electric reversing shuttle"
+        },
+        {
+          "label": "Drive",
+          "value": "4WD"
+        },
+        {
+          "label": "4WD Hydraulic pump flow",
+          "value": "108 LPM @ 2,000 rpm"
+        },
+        {
+          "label": "Hydraulic pressure",
+          "value": "3,850 psi"
+        }
+      ],
+      "description": "A 4WD machine with a front shovel for loading and a rear digging arm, used for trenching, loading trucks and small excavations. The 3DX is JCB's core backhoe loader, and JCB holds about half of India's registered construction equipment sales.",
+      "category": {
+        "_id": "bd8927f8-8abe-4c7d-85bf-38b6e412fbc0",
+        "title": "MACHINERIES",
+        "slug": "machineries"
+      },
+      "availability": "In Stock",
+      "featured": false,
+      "order": 0,
+      "updatedAt": "2026-10-28T05:03:23Z"
+    },
+    {
+      "_id": "4556b508-ab2f-4955-8489-fd76ef4afcc1",
+      "name": "TATA LPT 709",
+      "slug": "tata-lpt-709",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/32169459bc280459b660a92c0078244b393a9e2d-1080x727.png",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/32169459bc280459b660a92c0078244b393a9e2d-1080x727.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/d5eb7f253f686db2ae287613d8766dd73f503e88-1856x1187.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/248b7e7333f8fe592ac6769b40eaea02061bfc01-1856x1253.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/b89ab02e2019a3368d169cb51488e48eeb5d3f96-1856x1579.png"
+      ],
+      "highlights": [
+        "74HP",
+        "7.50 R16",
+        "LHD/RHD",
+        "Euro 2",
+        "7250 KG",
+        "3800 WB"
+      ],
+      "specifications": [
+        {
+          "label": "Engine",
+          "value": "74HP Euro 2"
+        },
+        {
+          "label": "Engine Capacity",
+          "value": "3784cc 4 Cylinder"
+        },
+        {
+          "label": "Wheelbase",
+          "value": "3800 mm"
+        },
+        {
+          "label": "GVW",
+          "value": "7250 Kg"
+        },
+        {
+          "label": "Payload",
+          "value": "5000 KG"
+        },
+        {
+          "label": "Deck",
+          "value": "5.0 x 2.1 Meter"
+        },
+        {
+          "label": "Wheel",
+          "value": "7.50 R16 – 16PR"
+        }
+      ],
+      "description": "The Tata LPT 709 LHD is a light-to-medium commercial truck engineered for emerging export markets across Africa, South America, and the Middle East. Configured with Left-Hand Drive (LHD) and an Euro-II (E-II) emission standard, it delivers a balance of mechanical simplicity, rugged durability, and high payload capacity for harsh operating environments.\n\nKey Capabilities & African Market SuitabilityDrivetrain & Fuel Tolerance: Powered by the 3.8-liter, 4-cylinder Tata 497 diesel engine delivering 90 PS and 261 Nm of torque. Its mechanical rotary fuel injection system is highly tolerant of varying diesel fuel qualities across regional markets, offering easy field maintenance without complex electronic diagnostic tools.  Payload & Hauling Efficiency: Designed with a Gross Vehicle Weight (GVW) of 7,250 kg and a rated payload capacity of 5,000 kg. The 5.0 m × 2.1 m cargo deck handles high-volume freight, agricultural goods, and general construction materials.  Chassis & Suspension: Built on a heavy-duty ladder-type chassis with a 3,800 mm wheelbase. Paired with 7.50 R16 (16 PR) tires, it provides ground clearance and strength for unpaved roads and rough terrain.  Handling & Safety: Equipped with integral hydraulic power steering for maneuverability in congested urban centers, paired with vacuum-assisted dual-circuit hydraulic brakes and a 5-speed GBS-27 manual synchromesh transmission.  Operational Economy: Features a 90-liter fuel tank and simple, low-cost mechanical spares, making it a reliable, high-uptime workhorse for regional distribution and logistics fleets.  ",
+      "category": {
+        "_id": "73ed16f5-7d83-4d2d-aca7-a5929aef3ab7",
+        "title": "TRUCKS",
+        "slug": "trucks"
+      },
+      "availability": "In Stock",
+      "featured": true,
+      "order": 0,
+      "updatedAt": "2026-08-25T07:13:59Z"
+    },
+    {
+      "_id": "054e40e7-5f9a-41b7-b1fc-e29452b4b383",
+      "name": "TATA LPO 1618 Bus",
+      "slug": "tata-lpo-1618-bus",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/420e1a6fe1449cdb6097e8ed4e0eb35eeac92372-2624x1632.png",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/420e1a6fe1449cdb6097e8ed4e0eb35eeac92372-2624x1632.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/b661fef2f731e3f32c888770008b862c6183d471-1600x1200.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/6759416c7b616daae2e87a572d9ea657564f41f3-1600x1200.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/522e480291eb7fc1b1bddfb1cbc5a2f1c5aaac02-1200x1600.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/e27a981e724edc990dde90c44e2e4efbad8c261a-1600x1200.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/349238b1bac45330e9a0537a4d9af8a7d54e2da8-1200x1600.jpg"
+      ],
+      "highlights": [
+        "2026",
+        "61/66SEAT",
+        "Non AC/AC",
+        "LHD",
+        "Euro 2",
+        "1&2 Door"
+      ],
+      "specifications": [
+        {
+          "label": "Engine",
+          "value": "5.8L Cummins"
+        },
+        {
+          "label": "Engine Power",
+          "value": "180 HP"
+        },
+        {
+          "label": "Drive Type",
+          "value": "4X2"
+        },
+        {
+          "label": "Condition",
+          "value": "Brand New"
+        },
+        {
+          "label": "GVW",
+          "value": "16200 KG"
+        },
+        {
+          "label": "Suspenstion",
+          "value": "Semi elliptical leaf spring"
+        },
+        {
+          "label": "Options",
+          "value": "AC / Non AC Both"
+        },
+        {
+          "label": "Tyres",
+          "value": "11R22.5-16PR"
+        },
+        {
+          "label": "Wheelbase",
+          "value": "5545 mm"
+        }
+      ],
+      "description": "The Tata LPO 1618 bus in latest Agile design is a versatile and economical bus model from Tata Motors, designed to meet the needs of staff and school transportation. Both AC and NON AC options are available for this model. ",
+      "category": {
+        "_id": "393c9bdc-c25f-4a70-aa83-c45d3516a006",
+        "title": "BUSES",
+        "slug": "buses"
+      },
+      "availability": "In Stock",
+      "featured": true,
+      "order": 0,
+      "updatedAt": "2026-08-23T23:43:38Z"
+    },
+    {
+      "_id": "cba7e445-ddfc-41b0-9be5-5ceab3318114",
+      "name": "TATA LPT 1618 TRUCK",
+      "slug": "tata-lpt-1618-truck",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/851ebe6db56f0a7129de8deabf4fbb2f3b13cd37-1856x1606.png",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/851ebe6db56f0a7129de8deabf4fbb2f3b13cd37-1856x1606.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/9bc462e3bb92fae748a765999e6cab3856655dd9-1856x1602.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/5bf327c3d6f3df33a2669d716f780ce3785f8967-1856x1568.png"
+      ],
+      "highlights": [
+        "180 HP",
+        "11R22.5",
+        "LHD/RHD",
+        "EURO 2",
+        "16200KG",
+        "5200WB"
+      ],
+      "specifications": [
+        {
+          "label": "MAKE",
+          "value": "TATA"
+        },
+        {
+          "label": "ENGINE",
+          "value": "Cummins 6 liter - Euro 2"
+        },
+        {
+          "label": "Power",
+          "value": "180 HP"
+        },
+        {
+          "label": "Tyre",
+          "value": "11R22.5 16PR"
+        },
+        {
+          "label": "Wheelbase",
+          "value": "5200 mm"
+        },
+        {
+          "label": "GVW",
+          "value": "16200 kg"
+        },
+        {
+          "label": "Vehicle Length",
+          "value": "9047 mm"
+        }
+      ],
+      "description": "The Tata LPT 1618 is a medium-to-heavy-duty 4x2 commercial cargo truck engineered for regional logistics, long-haul freight, and demanding infrastructure operations across emerging markets. Built with an Euro-II powertrain and robust driveline mechanics, it combines high payload capability with field-proven reliability.\n\nKey Capabilities & Market Suitability\nHeavy-Duty Powertrain: Powered by a Cummins B180 20 Euro-II diesel engine delivering 180 HP at 2,500 rpm and a peak torque of 650 Nm at 1,500 rpm. It provides low-end pulling power and high tolerance for varying fuel qualities with low maintenance overhead.\n\nPayload & Load Distribution: Rated at a Gross Vehicle Weight (GVW) of 16,200 kg with a chassis tare weight of 5,400 kg, allowing an effective payload capacity of up to 10,800 kg. Axle loads are balanced with a 6,000 kg front axle (FAW) and a heavy-duty 10,200 kg rear axle (RAW).\n\nTransmission & Driveline: Equipped with a 6-speed TATA GBS-600 manual gearbox (first gear ratio: 6.58), a 352 mm clutch, and a 5.857 rear axle ratio (RAR). This setup delivers a maximum gradeability of 29% in 1st gear for steep inclines and a top speed of 105 km/h.\n\nChassis & Maneuverability: Features a long 5,200 mm wheelbase on an overall chassis length of 9,047 mm and width of 2,440 mm, accommodating large cargo bodies with a turning circle diameter (Min. TCD) of 20,860 mm.\n\nSuspension, Braking & Range: Fitted with semi-elliptical leaf spring suspension at both the front and rear, paired with 11R22.5 16PR heavy-duty tires. Braking is handled by a Full Air S-Cam system, while an extra-large 350-liter fuel tank maximizes range between refuels on long-haul routes.",
+      "category": {
+        "_id": "73ed16f5-7d83-4d2d-aca7-a5929aef3ab7",
+        "title": "TRUCKS",
+        "slug": "trucks"
+      },
+      "availability": "In Stock",
+      "featured": true,
+      "order": 1,
+      "updatedAt": "2026-08-25T07:15:35Z"
+    },
+    {
+      "_id": "e4dbc3b9-fab3-4268-b2d7-84f97bc8967a",
+      "name": "TATA LPO 1318 Bus",
+      "slug": "tata-lpo-1318-bus",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/1bddc86615f855a6b196c2333f88d5c770073583-1300x867.jpg",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/1bddc86615f855a6b196c2333f88d5c770073583-1300x867.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/99c88c8a594046cfcde61ef02cfacc42c3f6c68c-1300x867.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/f4a6ce023a561e2a3da709a5313ccbf62257f98c-1600x719.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/ef1aa0e055648dd4778414689def937370ba51b2-1280x720.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/fd1578a6e656fd21c466e229e7f72c1b88b246a1-1600x719.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/e98d43079ce489507187c6464bc2e14426d22844-900x1600.jpg"
+      ],
+      "highlights": [
+        "2027",
+        "61 Seats",
+        "Non AC",
+        "LHD",
+        "Euro 2",
+        "2 Door"
+      ],
+      "specifications": [
+        {
+          "label": "MAKE",
+          "value": "TATA"
+        },
+        {
+          "label": "ENGINE",
+          "value": "CUMMINS 180 HP"
+        },
+        {
+          "label": "SEATS",
+          "value": "61+D"
+        },
+        {
+          "label": "DOORS",
+          "value": "2"
+        },
+        {
+          "label": "EMISSION",
+          "value": "EURO 2"
+        },
+        {
+          "label": "STEERING",
+          "value": "LHD"
+        },
+        {
+          "label": "DRIVE",
+          "value": "4X2"
+        },
+        {
+          "label": "ADDITIONAL",
+          "value": "FAN, HATRACK"
+        }
+      ],
+      "description": "The LPO 1318 is a heavy-duty, high-capacity commuter bus engineered specifically for demanding intercity, rural, and semi-urban routes. Built on a reinforced ladder-frame chassis, it combines high passenger volume with the mechanical durability needed to withstand unpaved roads and severe terrain.",
+      "category": {
+        "_id": "393c9bdc-c25f-4a70-aa83-c45d3516a006",
+        "title": "BUSES",
+        "slug": "buses"
+      },
+      "availability": "In Stock",
+      "featured": true,
+      "order": 1,
+      "updatedAt": "2026-08-23T23:47:24Z"
+    },
+    {
+      "_id": "59681ad6-6aa2-4079-8fad-34625468211e",
+      "name": "Wheel loader — JCB 432ZX Plus",
+      "slug": "wheel-loader-jcb-432zx-plus",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/1b8a5652188add8d4db8dbc5057f649b0d7fa195-1600x1200.jpg",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/1b8a5652188add8d4db8dbc5057f649b0d7fa195-1600x1200.jpg"
+      ],
+      "highlights": [
+        "Engine: 150hp",
+        "Op Weight: 12000Kg",
+        "Shovel: 2.2m3",
+        "Payload: 3650Kg"
+      ],
+      "specifications": [
+        {
+          "label": "Engine",
+          "value": "Cummins 6BTAA 5.9C-150C, 4-stroke, direct injection, 5.9 L"
+        }
+      ],
+      "description": "A 12-tonne articulated wheel loader with a large front shovel for loading trucks and hoppers quickly, used in quarries, crushers, cement and steel plants, coal yards and ports.",
+      "category": {
+        "_id": "bd8927f8-8abe-4c7d-85bf-38b6e412fbc0",
+        "title": "MACHINERIES",
+        "slug": "machineries"
+      },
+      "availability": "on_request",
+      "featured": false,
+      "order": 2,
+      "updatedAt": "2026-10-28T06:40:04Z"
+    },
+    {
+      "_id": "59c2e8b4-070a-424b-bd33-a0eaf852a004",
+      "name": "Soil Compactor- JCB 115",
+      "slug": "soil-compactor-jcb-116",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/cf7e8978fb488085dd7dcd9b47d5bdfbe3111828-1600x1200.jpg",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/cf7e8978fb488085dd7dcd9b47d5bdfbe3111828-1600x1200.jpg"
+      ],
+      "highlights": [
+        "Op Weight: 11250Kg",
+        "Engine: 100hp",
+        "Drum Width: 2100mm",
+        "Force: 256kN"
+      ],
+      "specifications": [
+        {
+          "label": "Engine",
+          "value": "JCB Diesel Max TCA-74 / TCA-85, 4-cylinder,"
+        }
+      ],
+      "description": "An 11-tonne single-drum vibratory roller that compacts soil, gravel and sub-base layers on roads, embankments, dams and industrial sites. India is JCB's global manufacturing hub for compactors.",
+      "category": {
+        "_id": "bd8927f8-8abe-4c7d-85bf-38b6e412fbc0",
+        "title": "MACHINERIES",
+        "slug": "machineries"
+      },
+      "availability": "on_request",
+      "featured": false,
+      "order": 2,
+      "updatedAt": "2026-10-28T21:14:21Z"
+    },
+    {
+      "_id": "b110fc39-036f-4287-b7e2-783ee3358e4c",
+      "name": "TATA LPO 1623 COACH BUS",
+      "slug": "tata-lpo-1623-coach-bus",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/897eef7323db0559e42b598f9359eb650a8b1848-2528x1696.png",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/897eef7323db0559e42b598f9359eb650a8b1848-2528x1696.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/a8e67ca2131837619c44130dcdbbaf3e08fe08fb-2528x1696.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/e63b44e57bf603036b4644f920f806e892f508df-2528x1696.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/cf698a4d5a9b55eaf8fa4a80be92838e3ee20609-482x278.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/29ade17bf9ff701a85064e2a7353705174aecb9d-765x1020.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/038e9d6590c0ab8d7ae8e1a1e3fbf26bf8de8e97-765x1020.jpg"
+      ],
+      "highlights": [
+        "2027",
+        "61 SEAT",
+        "AC/NON AC",
+        "LHD",
+        "EURO 3",
+        "1/2 DOOR"
+      ],
+      "specifications": [
+        {
+          "label": "MAKE",
+          "value": "TATA"
+        },
+        {
+          "label": "MODEL",
+          "value": "LPO 1623 COACH BUS"
+        },
+        {
+          "label": "ENGINE",
+          "value": "230 HP Cummins ISBe5.9L Euro-3"
+        },
+        {
+          "label": "TYRE",
+          "value": "295/80 R22.5 -16 PR"
+        },
+        {
+          "label": "SUSPENSION",
+          "value": "Parabolic Leaf Spring suspension at Front and Rear"
+        },
+        {
+          "label": "FUEL TANK",
+          "value": "350L"
+        },
+        {
+          "label": "SEATS",
+          "value": "49/61/64"
+        },
+        {
+          "label": "DOOR",
+          "value": "SINGLE AND DOUBLE DOOR"
+        },
+        {
+          "label": "AIRCONDITIONING",
+          "value": "AC/NON AC BOTH"
+        },
+        {
+          "label": "WHEELBASE",
+          "value": "6200 MM"
+        },
+        {
+          "label": "LENGTH",
+          "value": "12400 MM"
+        },
+        {
+          "label": "BOOTSPACE",
+          "value": "10M3"
+        }
+      ],
+      "description": "Key Specifications & Highlights\nPowertrain & Performance: Driven by a 230 HP Cummins ISBe 5.9L Euro-III engine delivering 850 Nm of torque at 1400–1700 rpm. Paired with a TATA G-750-6.58 overdrive gearbox and a 380 mm organic dry friction clutch, it delivers a 30% climbing gradeability in 1st gear for steep gradients and difficult terrain.\n\nCabin Comfort & Luxury: Accommodates up to 61 semi-reclining seats inside a spacious 12.3-meter cabin, paired with a high-capacity 36,000 kcal air conditioning system to maintain consistent thermal comfort in extreme climates.\n\nAdvanced Suspension: Features parabolic leaf spring suspension at both the front and rear, delivering enhanced ride comfort and vibration dampening over corrugated or unpaved road surfaces.\n\nChassis & Range: A 6,200 mm wheelbase supported by heavy-duty 295/80 R22.5 tyres and a large 350-liter fuel tank ensure stability and extensive operating range for long-haul routes.\n\nControl & Safety: Equipped with integral hydraulic power-assisted steering and a dual-circuit full air S-Cam braking system with ABS for reliable control and stopping power under heavy passenger loads.",
+      "category": {
+        "_id": "393c9bdc-c25f-4a70-aa83-c45d3516a006",
+        "title": "BUSES",
+        "slug": "buses"
+      },
+      "availability": "In Stock",
+      "featured": true,
+      "order": 2,
+      "updatedAt": "2026-08-24T02:24:43Z"
+    },
+    {
+      "_id": "e2dc65c5-3af4-431e-a8df-92fcbb71896f",
+      "name": "TATA Ultra T.16 Trucks",
+      "slug": "tata-ultra-t-16-trucks",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/798a7fae1cc288c28cc2a8982fc993efba47f557-2400x1792.png",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/798a7fae1cc288c28cc2a8982fc993efba47f557-2400x1792.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/c6e33bfe59c97549a2008d7bc91d63aaf62764da-2400x1792.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/1b9fd6ff6c98c83dc0cdf5b248e4849d3411f7f5-2400x1792.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/dfa22a831ddf2eb61aee71ea913a973c28038ad2-2400x1792.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/aef50e713d27710b61164b16f30c0a4e0ee6b54e-2400x1792.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/d43ef3a2541636d43a88e111ecd5c184a7408396-4818x3212.jpg"
+      ],
+      "highlights": [
+        "180HP",
+        "275/80R22.5",
+        "LHD",
+        "Euro 4",
+        "16200 Kg",
+        "53 WB"
+      ],
+      "specifications": [
+        {
+          "label": "Make",
+          "value": "TATA"
+        },
+        {
+          "label": "Power",
+          "value": "180 HP"
+        },
+        {
+          "label": "Airconditioning",
+          "value": "HVAC"
+        },
+        {
+          "label": "GVW",
+          "value": "16200"
+        },
+        {
+          "label": "Payload",
+          "value": "10000 Kg"
+        },
+        {
+          "label": "Wheelbase",
+          "value": "5300"
+        }
+      ],
+      "description": "Ultra T.16",
+      "category": {
+        "_id": "73ed16f5-7d83-4d2d-aca7-a5929aef3ab7",
+        "title": "TRUCKS",
+        "slug": "trucks"
+      },
+      "availability": "In Stock",
+      "featured": true,
+      "order": 3,
+      "updatedAt": "2026-08-25T07:14:25Z"
+    },
+    {
+      "_id": "b4ae5f63-815b-4085-992c-f478a258b0b9",
+      "name": "TATA LPO 916 SCHOOL BUS",
+      "slug": "tata-lpo-916-school-bus",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/a720baaccb55a720068d423f8808f88de43d6f9d-2528x1696.png",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/a720baaccb55a720068d423f8808f88de43d6f9d-2528x1696.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/b8756ca277bb2428add49ec1bc61203ec82cadec-2528x1696.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/c488d5a03b62784b549b7538bbaae9f66ead478e-2528x1696.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/c9dfded53bd60d09ee744f1e99b890b7e92fc8a8-2528x1696.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/8ab6b8960f710bb786d39452fdf9c6ef589c40eb-2528x1696.png",
+        "https://cdn.sanity.io/images/a3wpvljs/production/d68500a255df1a5b1e94cd1bcab1076cfc17b74b-6016x4016.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/da170ab013c6236977cb5727e695699443e87462-6016x4016.jpg"
+      ],
+      "highlights": [
+        "2026",
+        "33 Seat",
+        "AC",
+        "LHD",
+        "Euro4",
+        "1 Door"
+      ],
+      "specifications": [
+        {
+          "label": "MAKE",
+          "value": "TATA"
+        },
+        {
+          "label": "MODEL",
+          "value": "LPO 916 STAFF AND SCHOOL BUS"
+        },
+        {
+          "label": "ENGINE",
+          "value": "158 HP"
+        },
+        {
+          "label": "EMISSION",
+          "value": "EURO-4"
+        },
+        {
+          "label": "STEERING",
+          "value": "LHD"
+        },
+        {
+          "label": "DRIVE",
+          "value": "4x2"
+        },
+        {
+          "label": "AIRCONDITIONING",
+          "value": "AC"
+        },
+        {
+          "label": "SEATS",
+          "value": "33+D"
+        },
+        {
+          "label": "APPLICATION",
+          "value": "SCHOOL AND STAFF"
+        },
+        {
+          "label": "DOOR",
+          "value": "SINGLE DOOR"
+        }
+      ],
+      "description": "The Tata LPO 916 is a versatile mid-capacity bus platform engineered for staff transportation, intercity passenger transit, tourist coach applications, and school transport. Built on an intermediate commercial chassis, it pairs fuel-efficient diesel performance with robust passenger-carrying capability.\n\nKey Specifications & Highlights\nPowertrain & Efficiency: Powered by a direct-injection, turbocharged intercooled diesel engine producing approximately 160 hp, engineered to provide high low-end torque for urban stop-and-go routes and consistent highway cruising.\n\nSeating Flexibility: Typically configured to seat 32 to 40 passengers depending on layout (luxury pushback, high-density commuter, or school bus configurations), offering a balanced footprint for tight city streets and highway travel.\n\nSuspension & Ride Quality: Utilizes parabolic or heavy-duty semi-elliptic leaf springs with hydraulic double-acting shock absorbers and anti-roll bars, engineered to reduce body roll and maintain passenger comfort across rough road conditions.\n\nSteering & Maneuverability: Equipped with hydraulic power-assisted steering, providing a tight turning radius suitable for narrow suburban roads, congested city traffic, and depot operations.\n\nBraking & Safety: Features a full-air dual circuit S-Cam braking system, typically equipped with ABS and an engine exhaust brake for dependable stopping power and longer brake-liner life.",
+      "category": {
+        "_id": "393c9bdc-c25f-4a70-aa83-c45d3516a006",
+        "title": "BUSES",
+        "slug": "buses"
+      },
+      "availability": "In Stock",
+      "featured": false,
+      "order": 3,
+      "updatedAt": "2026-08-25T04:37:34Z"
+    },
+    {
+      "_id": "f40c23e0-2b1c-4caf-a121-87225b680162",
+      "name": "Crawler excavator — JCB NXT 205LC",
+      "slug": "crawler-excavator-jcb-nxt-205lc",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/d5257056e520c3dc25605fd6ee48f69066bbb547-1600x1200.jpg",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/d5257056e520c3dc25605fd6ee48f69066bbb547-1600x1200.jpg"
+      ],
+      "highlights": [
+        "Engine: 140hp",
+        "Op Weight: 20500Kg",
+        "Bucket: 1.02m3",
+        "Depth: 6.14 m",
+        "Reach: 9.4 m"
+      ],
+      "specifications": [
+        {
+          "label": "Engine power",
+          "value": "140 hp, Cummins 6BT 5.9C"
+        }
+      ],
+      "description": "A 20-tonne tracked excavator with a 360° rotating upper body, the workhorse size for earthwork, trenching, quarry loading and road projects. JCB positions it as \"precision for hirers, affordability for buyers\".",
+      "category": {
+        "_id": "bd8927f8-8abe-4c7d-85bf-38b6e412fbc0",
+        "title": "MACHINERIES",
+        "slug": "machineries"
+      },
+      "availability": "In Stock",
+      "featured": false,
+      "order": 4,
+      "updatedAt": "2026-10-28T06:45:11Z"
+    },
+    {
+      "_id": "bdf88822-f954-4485-9f1e-72c209f5fe7a",
+      "name": "Skid steer loader — JCB SSL 155",
+      "slug": "skid-steer-loader-jcb-ssl-155",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/20cfc24c2bd78c6bb21237983535e7ba05f1370e-1600x1200.jpg",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/20cfc24c2bd78c6bb21237983535e7ba05f1370e-1600x1200.jpg"
+      ],
+      "highlights": [
+        "Engine: 60hp",
+        "Capacity: 703kg",
+        "Bucket:0.4m3"
+      ],
+      "specifications": [
+        {
+          "label": "Engine",
+          "value": "Perkins 404D-22T, turbocharged diesel"
+        }
+      ],
+      "description": "A compact loader that turns on the spot by skidding its wheels, used on tight urban and indoor sites, for clean-up and material shifting, and with attachments such as forks, brooms and breakers. The SSL 155 is the turbocharged model of JCB's range.",
+      "category": {
+        "_id": "bd8927f8-8abe-4c7d-85bf-38b6e412fbc0",
+        "title": "MACHINERIES",
+        "slug": "machineries"
+      },
+      "availability": "sold",
+      "featured": false,
+      "order": 5,
+      "updatedAt": "2026-10-28T06:48:45Z"
+    },
+    {
+      "_id": "a6ec332b-ea35-40ab-96ba-bac0e43dce59",
+      "name": "Pick-and-carry crane — Forma FE150",
+      "slug": "pick-and-carry-crane-forma-fe150",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/24a5367db3cbeb8dc0db6fd462dffa0968625c3e-1600x1200.jpg",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/24a5367db3cbeb8dc0db6fd462dffa0968625c3e-1600x1200.jpg"
+      ],
+      "highlights": [
+        "Engine: 101 hp",
+        "Capacity: 15t",
+        "Lift: 11.2m",
+        "Turning radius: 7m",
+        "Op Weight: 15220 kg"
+      ],
+      "specifications": [
+        {
+          "label": "Engine",
+          "value": "Tata Model 497, 4-cylinder, water-cooled diesel, 101 hp, BS-III, ECU"
+        }
+      ],
+      "description": "A 15-tonne articulated crane that lifts a load and drives with it, with no outriggers needed, used in factories, steel yards, ports and for equipment erection. Forma is part of the ACE group, and the brochure's load charts are those of the ACE FX150",
+      "category": {
+        "_id": "bd8927f8-8abe-4c7d-85bf-38b6e412fbc0",
+        "title": "MACHINERIES",
+        "slug": "machineries"
+      },
+      "availability": "In Stock",
+      "featured": false,
+      "order": null,
+      "updatedAt": "2026-10-28T07:10:37Z"
+    },
+    {
+      "_id": "06f71751-d737-4300-919d-2662341fffb8",
+      "name": "Telehandler — JCB 530-70",
+      "slug": "telehandler-jcb-530-70",
+      "cardImage": "https://cdn.sanity.io/images/a3wpvljs/production/e7ef80c41df12eb2a5a70353da751a11433ed47a-1600x1200.jpg",
+      "gallery": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/e7ef80c41df12eb2a5a70353da751a11433ed47a-1600x1200.jpg"
+      ],
+      "highlights": [
+        "Engine: 76hp",
+        "Capacity: 3000kg",
+        "Reach: 3.83m",
+        "Lift: 7m"
+      ],
+      "specifications": [
+        {
+          "label": "Engine",
+          "value": "JCB 448, naturally aspirated, 4-cylinder, 4.8 L"
+        }
+      ],
+      "description": "A wheeled machine with a telescopic boom that lifts, loads, grabs and gives access at height, with quick-change attachments such as forks and buckets. It is used on building sites, in cement and steel plants, warehouses and farms.",
+      "category": {
+        "_id": "bd8927f8-8abe-4c7d-85bf-38b6e412fbc0",
+        "title": "MACHINERIES",
+        "slug": "machineries"
+      },
+      "availability": "on_request",
+      "featured": false,
+      "order": null,
+      "updatedAt": "2026-10-28T06:51:05Z"
+    }
+  ],
+  "testimonials": [
+    {
+      "_id": "5508723c-47f2-48de-a8e4-6a5d57526987",
+      "customerName": "Mr Mamadou",
+      "customerDetail": "Municipal Fire Service, Senegal",
+      "quote": "“Fire equipment has to be right the first time. Nik Exports delivered a fire truck built to our specification, with full documentation, and supported us through coimissioning.”",
+      "photos": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/bbfc09999e86ff3253650de094e954b7eca03627-1600x900.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/9dad2f9c49fdd1d87e94b47c73074c5759baa634-1600x900.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/519166ff73769d726fbea79680ea67d20da7c48a-1600x900.jpg"
+      ],
+      "order": 0
+    },
+    {
+      "_id": "a7a73358-46f2-4b9e-9a24-f045a1cadb9a",
+      "customerName": "Mr Kwame",
+      "customerDetail": "Magagin Director, Intercity Transport Company, Accra , Ghana",
+      "quote": "We ordered 5 TATA LPO 1618 buses for our intercity routes. Nik Exports handled the documents and shipping smoothly, and the buses reached Accra on schedule. They have run reliably on our routes since day one.",
+      "photos": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/5c8208a3da52c7220d2f1530c3c3070679cccd01-632x386.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/7f4cdff1eadbf4a83cccbe2bb00577c37d8caf1c-633x234.jpg"
+      ],
+      "order": 1
+    },
+    {
+      "_id": "74cc366a-d5c6-4457-95d8-8ab95f32ab99",
+      "customerName": "Mr Sekou",
+      "customerDetail": "Owner, Commercial Vehicle Parts Dealer, Conakry, Guinea",
+      "quote": "We source TATA genuine parts through Nik Exports. Orders are packed correctly, dispatched quickly, and fill rate was 98.5%. We are now a regular customer and order regularly for our urgent needs also through Aircargo and LCL Cargo. Their prices are better than aftermarket parts.",
+      "photos": [
+        "https://cdn.sanity.io/images/a3wpvljs/production/431af326e41a7d46aac41fac78c51fb2857169ca-463x272.jpg",
+        "https://cdn.sanity.io/images/a3wpvljs/production/c5a085fb2269639071be4064cf57b463627785f3-463x273.jpg"
+      ],
+      "order": null
+    }
+  ],
+  "siteSettings": {
+    "tagline": "COMMERCIAL VEHICLES & FLEET EXPORT",
+    "aboutText": "Headquartered in the UAE, SSG Motors is your reliable gateway to the global automotive market. As premier exporters and traders, we supply worldwide clients with top-tier automotive products across all categories. Partner with us for consistent, hassle-free deliveries you can always depend on",
+    "contactEmail": "info@ssgmotors.com",
+    "contactPhone": "+971 50 698 8527",
+    "address": "SevenSeas Global Trading FZ LLC\nCompass Building,\nAl Shohada Road, AL Hamra Industrial Zone-FZ,\nRas Al Khaimah, United Arab Emirates",
+    "socialLinks": {
+      "facebook": "https://www.facebook.com/profile.php?id=61592216920291",
+      "instagram": "https://www.instagram.com/motorsssg?igsi=MXU2cm8yZG1rbTdiNg==",
+      "whatsapp": "https://wa.me/971506988527"
+    },
+    "heroImages": [
+      "https://cdn.sanity.io/images/a3wpvljs/production/d90cf174edc19c0c81032a103a6f75d2a9fa97fb-2624x1632.png",
+      "https://cdn.sanity.io/images/a3wpvljs/production/1618859dbd7ed2a15b4bf54457d8566424afdba4-2624x1632.png",
+      "https://cdn.sanity.io/images/a3wpvljs/production/8caee3fe67fa84fe8e8e9f835a226151620a61b7-2624x1632.png",
+      "https://cdn.sanity.io/images/a3wpvljs/production/79c9776c3dbfaa22ad7799c982aaaf724f74247b-2624x1632.png"
+    ]
+  },
+  "inquiries": [
+    {
+      "_id": "3f1b4322-4406-4dfd-ae51-723ed8c05573",
+      "name": "Anonymous",
+      "email": "",
+      "phone": "",
+      "message": "",
+      "submittedAt": "2026-10-28T22:14:48.897Z"
+    }
+  ]
+}

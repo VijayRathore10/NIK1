@@ -1,0 +1,115 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Commercial vehicle or machinery in catalog",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "slug": { "type": "string" },
+        "category": { "type": "object" },
+        "cardImage": { "type": "string" },
+        "gallery": { "type": "array" },
+        "highlights": { "type": "array" },
+        "specifications": { "type": "array" },
+        "description": { "type": "string" },
+        "availability": { "type": "string" },
+        "featured": { "type": "boolean" },
+        "order": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "slug"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Vehicle or machinery category",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "image": { "type": "string" },
+        "order": { "type": "number" }
+      },
+      "required": ["title", "slug"]
+    },
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "Customer testimonial and delivery proof",
+      "type": "object",
+      "properties": {
+        "customerName": { "type": "string" },
+        "customerDetail": { "type": "string" },
+        "quote": { "type": "string" },
+        "photos": { "type": "array" },
+        "order": { "type": "number" }
+      },
+      "required": ["customerName", "quote"]
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Global website contact details and hero slider",
+      "type": "object",
+      "properties": {
+        "tagline": { "type": "string" },
+        "aboutText": { "type": "string" },
+        "contactEmail": { "type": "string" },
+        "contactPhone": { "type": "string" },
+        "address": { "type": "string" },
+        "socialLinks": { "type": "object" },
+        "heroImages": { "type": "array" }
+      }
+    },
+    "Inquiry": {
+      "title": "Inquiry",
+      "description": "Customer inquiry and lead request",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "message": { "type": "string" },
+        "product": { "type": "string" },
+        "submittedAt": { "type": "string" }
+      },
+      "required": ["name", "email", "message"]
+    },
+    "UploadedImage": {
+      "title": "UploadedImage",
+      "description": "Uploaded image file backup and metadata",
+      "type": "object",
+      "properties": {
+        "filename": { "type": "string" },
+        "contentType": { "type": "string" },
+        "base64": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["filename", "contentType"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Commercial vehicles and machinery catalog documents"
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/Category" },
+      "description": "Vehicle categories"
+    },
+    "/testimonials/{testimonialId}": {
+      "schema": { "$ref": "#/entities/Testimonial" },
+      "description": "Customer testimonials and delivery photos"
+    },
+    "/siteSettings/{settingId}": {
+      "schema": { "$ref": "#/entities/SiteSettings" },
+      "description": "Site global configuration and hero banners"
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": { "$ref": "#/entities/Inquiry" },
+      "description": "Buyer inquiries and quotation requests"
+    },
+    "/uploadedImages/{imageId}": {
+      "schema": { "$ref": "#/entities/UploadedImage" },
+      "description": "Uploaded media and photos backup"
+    }
+  }
+}

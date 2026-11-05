@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+:root {
+  --color-steel: #1b2027;
+  --color-paper: #f3f1ea;
+  --color-freight: #22405f;
+  --color-freight-dark: #172c42;
+  --color-amber: #e8a23d;
+  --color-amber-dark: #c9862a;
+  --color-graphite: #6b7280;
+  --color-line: #d8d3c4;
+}
+
+@theme inline {
+  --color-steel: var(--color-steel);
+  --color-paper: var(--color-paper);
+  --color-freight: var(--color-freight);
+  --color-freight-dark: var(--color-freight-dark);
+  --color-amber: var(--color-amber);
+  --color-amber-dark: var(--color-amber-dark);
+  --color-graphite: var(--color-graphite);
+  --color-line: var(--color-line);
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-steel);
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: 'Barlow Condensed', ui-sans-serif, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.mono-label {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  letter-spacing: 0.08em;
+}
+
+/* Riveted plate signature element used for product highlight tags */
+.rivet-plate {
+  position: relative;
+  border: 1px solid var(--color-line);
+  background: #ffffff;
+}
+.rivet-plate::before,
+.rivet-plate::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-line);
+}
+.rivet-plate::before { left: 6px; }
+.rivet-plate::after { right: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
