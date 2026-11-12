@@ -73,7 +73,7 @@ export default function Footer({ settings }) {
                 href="mailto:sales@nikexports.com"
                 className="hover:text-amber transition-colors flex items-center gap-2"
               >
-                info@ssgmotors.com
+                sales@nikexports.com
               </a>
             </li>
             <li>
