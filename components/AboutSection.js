@@ -31,7 +31,7 @@ export default function AboutSection() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
           <div>
             <h2 className="font-display text-3xl md:text-5xl font-bold uppercase tracking-tight text-[#e8a23d]">
-              WHY SSG MOTORS?
+              WHY NIK EXPORTS?
             </h2>
           </div>
         </div>
@@ -39,7 +39,7 @@ export default function AboutSection() {
         {/* Description from the bottom-most / footer section */}
         <div className="mb-14 max-w-4xl">
           <p className="text-base sm:text-lg text-[#3E4C59] leading-relaxed font-normal">
-            Headquartered in the UAE, SSG Motors is your reliable gateway to the global automotive market. As premier exporters and traders, we supply worldwide clients with top-tier automotive products across all categories. Partner with us for consistent, hassle-free deliveries you can always depend on.
+            Headquartered in Delhi, NIK Exports is your reliable gateway to the global automotive market. As premier exporters and traders, we supply worldwide clients with top-tier automotive products across all categories. Partner with us for consistent, hassle-free deliveries you can always depend on.
           </p>
         </div>
 
