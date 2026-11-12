@@ -15,7 +15,7 @@ const FAQ_ITEMS = [
       'We stock a wide variety of trucks, buses, heavy equipments, and agricultural equipment. New models are frequently added to our regular stock and can be sourced on demand.',
   },
   {
-    question: 'How can I buy from SSG Motors?',
+    question: 'How can I buy from NIK EXPORTS?',
     answer:
       'You can request a quote directly via our website, and one of our specialists will promptly get in touch with you. Alternatively, you can get directly contact our specialist through the contact section of our webpage.',
   },
