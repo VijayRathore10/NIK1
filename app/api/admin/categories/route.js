@@ -8,7 +8,7 @@ async function checkAuth() {
 }
 
 export async function GET() {
-  const categories = await getDbCategories();
+  const categories = await getDbCategories(true);
   return Response.json(categories);
 }
 

@@ -8,7 +8,7 @@ async function checkAuth() {
 }
 
 export async function GET() {
-  const settings = await getDbSiteSettings();
+  const settings = await getDbSiteSettings(true);
   return Response.json(settings);
 }
 
