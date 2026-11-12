@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 export default function Logo({
   isWhite = false,
-  className = 'h-11 sm:h-12 md:h-14 w-auto',
+  className = 'h-[31px] sm:h-[34px] md:h-[39px] w-auto',
   priority = true,
 }) {
   const [whiteImgError, setWhiteImgError] = useState(false);

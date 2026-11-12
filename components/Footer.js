@@ -56,7 +56,7 @@ export default function Footer({ settings }) {
       <div className="mx-auto max-w-7xl px-5 md:px-8 py-14 grid gap-10 md:grid-cols-3">
         <div>
           <div className="mb-4 pt-[5px]">
-            <Logo isWhite={true} className="h-11 sm:h-12 md:h-14 w-auto" />
+            <Logo isWhite={true} className="h-[31px] sm:h-[34px] md:h-[39px] w-auto" />
           </div>
           <p className="text-sm text-paper/70 leading-relaxed max-w-sm">
             {settings?.aboutText
