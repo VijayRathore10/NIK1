@@ -23,9 +23,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
-  if (!product) return { title: 'Vehicle Details | SSG Motors' };
+  if (!product) return { title: 'Vehicle Details' };
   return {
-    title: `${product.name} | SSG Motors`,
+    title: product.name,
     description: product.description || `Specifications and export quotation for ${product.name}.`,
   };
 }

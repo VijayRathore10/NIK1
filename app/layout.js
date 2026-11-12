@@ -28,9 +28,12 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata = {
-  title: 'Nik Exports | Commercial Vehicles & Equipment Export',
+  title: {
+    default: 'NIK EXPORTS | Commercial Vehicles & Equipment Export',
+    template: '%s | NIK EXPORTS',
+  },
   description:
-    'Nik Exports — Commercial vehicles & equipment export portal for trucks, buses, machinery, and special application vehicles.',
+    'NIK EXPORTS — Commercial vehicles & equipment export portal for trucks, buses, machinery, and special application vehicles.',
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },

@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata = {
-  title: 'About Us | NIK EXPORTS',
+  title: 'About Us',
   description:
     'NIK EXPORTS is India’s leading Export house specializing in commercial vehicles, agricultural machinery, and heavy equipment.',
 };

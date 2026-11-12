@@ -6,8 +6,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata = {
-
-  title: 'Request a Quote | SSG MOTORS',
+  title: 'Request a Quote',
   description: 'Request a customized FOB/CIF export quotation for commercial vehicles and machinery.',
 };
 
