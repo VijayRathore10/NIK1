@@ -271,10 +271,7 @@ export default function TestimonialCarousel({ testimonials }) {
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber/15 text-amber-dark flex items-center justify-center">
                       <Quote className="w-5 h-5 sm:w-6 sm:h-6 fill-amber/30" />
                     </div>
-                    <span className="mono-label text-[11px] font-bold uppercase tracking-wider text-steel/60 bg-steel/5 px-2.5 py-1 rounded-md border border-steel/10">
-                      Story 0{currentIndex + 1}
-                    </span>
-                  </div>
+                    </div>
 
                   {/* Quote text container that accommodates text without expanding or jumping the card */}
                   <div className="flex-1 min-h-0 overflow-y-auto pr-2">
