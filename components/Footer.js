@@ -86,7 +86,6 @@ export default function Footer({ settings }) {
             </li>
             <li className="pt-1 text-paper/70 leading-relaxed">
               <p className="font-medium text-paper">NIK EXPORTS INDIA</p>
-              <p>Compass Building,</p>
               <p>New Delhi,</p>
               <p>India</p>
             </li>
