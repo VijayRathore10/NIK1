@@ -44,7 +44,7 @@ export default function Footer({ settings }) {
     },
     {
       name: 'WhatsApp',
-      url: social.whatsapp || 'https://wa.me/971506988527',
+      url: social.whatsapp || 'https://wa.me/919216915159',
       icon: WhatsAppIcon,
       bgColor: 'hover:bg-[#25D366] hover:text-white',
       badge: 'Chat on WhatsApp',
@@ -61,7 +61,7 @@ export default function Footer({ settings }) {
           <p className="text-sm text-paper/70 leading-relaxed max-w-sm">
             {settings?.aboutText
               ? settings.aboutText.replace(/SSG Motors/g, 'Nik Exports')
-              : 'Headquartered in the UAE, Nik Exports is your reliable gateway to the global automotive market. As premier exporters and traders, we supply worldwide clients with top-tier automotive products across all categories. Partner with us for consistent, hassle-free deliveries you can always depend on.'}
+              : 'Headquartered in India, NIK EXPORTS is a premier export house delivering world-class commercial vehicles and automotive solutions to global markets. Leveraging deep-rooted partnerships with India’s leading OEMs and specialized fabricators, we streamline international sourcing with precision, transparency, and operational excellence. Partner with NIK EXPORTS for uncompromising quality, tailored vehicle configurations, and reliable global delivery you can trust.'}
           </p>
         </div>
 
@@ -70,7 +70,7 @@ export default function Footer({ settings }) {
           <ul className="text-sm text-paper/80 space-y-2.5">
             <li>
               <a
-                href="mailto:info@ssgmotors.com"
+                href="mailto:sales@nikexports.com"
                 className="hover:text-amber transition-colors flex items-center gap-2"
               >
                 info@ssgmotors.com
@@ -78,17 +78,17 @@ export default function Footer({ settings }) {
             </li>
             <li>
               <a
-                href="tel:+971506988527"
+                href="tel:+919216915159"
                 className="hover:text-amber transition-colors"
               >
-                +971 50 698 8527
+                +919216915159
               </a>
             </li>
             <li className="pt-1 text-paper/70 leading-relaxed">
-              <p className="font-medium text-paper">SevenSeas Global Trading FZ LLC</p>
+              <p className="font-medium text-paper">NIK EXPORTS INDIA</p>
               <p>Compass Building,</p>
-              <p>Al Shohada Road, AL Hamra Industrial Zone-FZ,</p>
-              <p>Ras Al Khaimah, United Arab Emirates</p>
+              <p>New Delhi,</p>
+              <p>India</p>
             </li>
           </ul>
         </div>
@@ -118,7 +118,7 @@ export default function Footer({ settings }) {
       </div>
 
       <div className="border-t border-paper/10 py-5 text-center text-xs text-paper/50 mono-label flex flex-wrap items-center justify-center gap-3">
-        <span>© {new Date().getFullYear()} SevenSeas Global trading FZ LLC</span>
+        <span>© {new Date().getFullYear()} Nik Exports India</span>
       </div>
     </footer>
   );
