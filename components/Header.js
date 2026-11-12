@@ -97,16 +97,16 @@ export default function Header({ settings }) {
           : 'py-1 text-white'
       }`}
     >
-      <div className="mx-auto max-w-7xl px-4 md:px-8 flex items-center justify-between">
+      <div className="mx-auto max-w-7xl px-4 md:px-8 flex items-center justify-between min-h-[56px] md:min-h-[64px]">
         {/* Brand Logo: White when transparent or <50% scroll; Colored when >=50% scroll */}
         <Link
           href="/"
-          className="inline-flex items-center transition-transform duration-200 hover:scale-102"
-          aria-label="SSG MOTORS Home"
+          className="inline-flex items-center transition-transform duration-200 hover:scale-102 shrink-0"
+          aria-label="Nik Exports Home"
         >
           <Logo
             isWhite={!isWhiteNav}
-            className="h-14 md:h-16 w-auto"
+            className="h-11 sm:h-12 md:h-14 w-auto"
           />
         </Link>
 

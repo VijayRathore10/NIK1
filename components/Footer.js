@@ -56,10 +56,12 @@ export default function Footer({ settings }) {
       <div className="mx-auto max-w-7xl px-5 md:px-8 py-14 grid gap-10 md:grid-cols-3">
         <div>
           <div className="mb-4 pt-[5px]">
-            <Logo isWhite={true} className="h-[60px] w-auto" />
+            <Logo isWhite={true} className="h-11 sm:h-12 md:h-14 w-auto" />
           </div>
           <p className="text-sm text-paper/70 leading-relaxed max-w-sm">
-            Headquartered in the UAE, SSG Motors is your reliable gateway to the global automotive market. As premier exporters and traders, we supply worldwide clients with top-tier automotive products across all categories. Partner with us for consistent, hassle-free deliveries you can always depend on.
+            {settings?.aboutText
+              ? settings.aboutText.replace(/SSG Motors/g, 'Nik Exports')
+              : 'Headquartered in the UAE, Nik Exports is your reliable gateway to the global automotive market. As premier exporters and traders, we supply worldwide clients with top-tier automotive products across all categories. Partner with us for consistent, hassle-free deliveries you can always depend on.'}
           </p>
         </div>
 
