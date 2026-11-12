@@ -78,10 +78,10 @@ export default function Footer({ settings }) {
             </li>
             <li>
               <a
-                href="tel:+919216915159"
+                href="tel:+91-9216915159"
                 className="hover:text-amber transition-colors"
               >
-                +919216915159
+                +91-9216915159
               </a>
             </li>
             <li className="pt-1 text-paper/70 leading-relaxed">
