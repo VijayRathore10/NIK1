@@ -1,15 +1,15 @@
 import AboutSection from '@/components/AboutSection';
 import FaqSection from '@/components/FaqSection';
 import Link from 'next/link';
-import { ArrowRight, PhoneCall } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 300;
 
 export const metadata = {
   title: 'About Us',
   description:
-    'NIK EXPORTS is India’s leading Export house specializing in commercial vehicles, agricultural machinery, and heavy equipment.',
+    'NIK EXPORTS is India’s leading export house specializing in commercial vehicles, agricultural machinery, and heavy equipment.',
+  alternates: { canonical: '/about' },
 };
 
 export default function AboutPage() {
@@ -24,7 +24,7 @@ export default function AboutPage() {
       <section className="mx-auto max-w-7xl px-5 md:px-8 mt-10">
         <div className="bg-[#102035] text-white rounded-3xl p-8 sm:p-12 md:p-16 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#B69255]/10 rounded-full blur-3xl pointer-events-none" />
-          
+
           <div className="relative z-10 max-w-2xl">
             <span className="mono-label text-xs uppercase font-bold text-[#E5A91A] tracking-widest mb-3 block">
               Partner With Us

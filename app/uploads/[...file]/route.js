@@ -10,23 +10,39 @@ function getMimeType(filename) {
   if (ext === '.png') return 'image/png';
   if (ext === '.webp') return 'image/webp';
   if (ext === '.gif') return 'image/gif';
+  if (ext === '.avif') return 'image/avif';
+  if (ext === '.bmp') return 'image/bmp';
   if (ext === '.svg') return 'image/svg+xml';
   return 'image/jpeg';
 }
 
+function buildSecurityHeaders(contentType) {
+  const headers = {
+    'Content-Type': contentType,
+    'Cache-Control': 'public, max-age=31536000, immutable',
+    'X-Content-Type-Options': 'nosniff',
+  };
+  if (contentType === 'image/svg+xml') {
+    headers['Content-Security-Policy'] = "default-src 'none'; sandbox";
+  }
+  return headers;
+}
+
 function readFromLocal(filename) {
-  // 1. Check /tmp/uploads (Cloud Run writable disk)
+  const safeName = path.basename(filename);
+
   try {
-    const tmpPath = path.join('/tmp', 'uploads', filename);
-    if (fs.existsSync(tmpPath)) {
+    const tmpDir = path.resolve('/tmp', 'uploads');
+    const tmpPath = path.resolve(tmpDir, safeName);
+    if (tmpPath.startsWith(tmpDir + path.sep) && fs.existsSync(tmpPath)) {
       return fs.readFileSync(tmpPath);
     }
   } catch {}
 
-  // 2. Check public/uploads (local dev / build artifacts)
   try {
-    const publicPath = path.join(process.cwd(), 'public', 'uploads', filename);
-    if (fs.existsSync(publicPath)) {
+    const publicDir = path.resolve(process.cwd(), 'public', 'uploads');
+    const publicPath = path.resolve(publicDir, safeName);
+    if (publicPath.startsWith(publicDir + path.sep) && fs.existsSync(publicPath)) {
       return fs.readFileSync(publicPath);
     }
   } catch {}
@@ -36,11 +52,15 @@ function readFromLocal(filename) {
 
 function writeToTmpCache(filename, buffer) {
   try {
-    const tmpDir = path.join('/tmp', 'uploads');
+    const safeName = path.basename(filename);
+    const tmpDir = path.resolve('/tmp', 'uploads');
     if (!fs.existsSync(tmpDir)) {
       fs.mkdirSync(tmpDir, { recursive: true });
     }
-    fs.writeFileSync(path.join(tmpDir, filename), buffer);
+    const target = path.resolve(tmpDir, safeName);
+    if (target.startsWith(tmpDir + path.sep)) {
+      fs.writeFileSync(target, buffer);
+    }
   } catch (err) {
     console.warn('Could not cache to /tmp/uploads:', err?.message);
   }
@@ -62,10 +82,7 @@ export async function GET(request, context) {
     const localBuffer = readFromLocal(safeFilename);
     if (localBuffer) {
       return new Response(localBuffer, {
-        headers: {
-          'Content-Type': getMimeType(safeFilename),
-          'Cache-Control': 'public, max-age=31536000, immutable',
-        },
+        headers: buildSecurityHeaders(getMimeType(safeFilename)),
       });
     }
 
@@ -78,7 +95,6 @@ export async function GET(request, context) {
         const data = docSnap.data();
         let fullBase64 = data?.base64 || '';
 
-        // If chunked into subcollection
         if (data?.isChunked && data?.totalChunks) {
           const chunksCol = collection(db, 'uploadedImages', safeFilename, 'chunks');
           const chunksSnap = await getDocs(chunksCol);
@@ -96,15 +112,11 @@ export async function GET(request, context) {
 
         if (fullBase64) {
           const buffer = Buffer.from(fullBase64, 'base64');
-
-          // Cache in writable /tmp directory for rapid subsequent hits
           writeToTmpCache(safeFilename, buffer);
 
+          const mime = data.contentType || getMimeType(safeFilename);
           return new Response(buffer, {
-            headers: {
-              'Content-Type': data.contentType || getMimeType(safeFilename),
-              'Cache-Control': 'public, max-age=31536000, immutable',
-            },
+            headers: buildSecurityHeaders(mime),
           });
         }
       }

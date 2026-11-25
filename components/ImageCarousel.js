@@ -9,9 +9,10 @@ export default function ImageCarousel({ images = [], alt }) {
   const [index, setIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
-  const safeImages = Array.isArray(images) && images.length > 0
-    ? images.filter(Boolean)
-    : ['https://picsum.photos/seed/vehicle/1920/1080'];
+  const safeImages =
+    Array.isArray(images) && images.length > 0
+      ? images.filter(Boolean)
+      : ['https://picsum.photos/seed/vehicle/1920/1080'];
 
   const prev = useCallback(() => {
     setIndex((i) => (i - 1 + safeImages.length) % safeImages.length);
@@ -21,34 +22,54 @@ export default function ImageCarousel({ images = [], alt }) {
     setIndex((i) => (i + 1) % safeImages.length);
   }, [safeImages.length]);
 
-  // Keyboard navigation for carousel and lightbox
+  // Keyboard navigation — skip arrows while typing in inputs/textareas/selects
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isLightboxOpen) {
+        setIsLightboxOpen(false);
+        return;
+      }
+
+      const activeEl = document.activeElement;
+      const tagName = activeEl?.tagName?.toUpperCase();
+      if (
+        tagName === 'INPUT' ||
+        tagName === 'TEXTAREA' ||
+        tagName === 'SELECT' ||
+        activeEl?.isContentEditable
+      ) {
+        return;
+      }
+
       if (e.key === 'ArrowLeft') prev();
       else if (e.key === 'ArrowRight') next();
-      else if (e.key === 'Escape') setIsLightboxOpen(false);
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [prev, next]);
+  }, [prev, next, isLightboxOpen]);
 
-  const currentImg = resolveImage(safeImages[index], 1920);
+  // Lock background scroll while fullscreen lightbox is open
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isLightboxOpen]);
+
+  const currentImg = resolveImage(safeImages[index]);
 
   return (
     <div className="w-full">
       {/* Main Full-Width Cinematic Vehicle Showcase Stage */}
       <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] lg:aspect-[21/9] min-h-[340px] sm:min-h-[440px] lg:min-h-[520px] max-h-[720px] bg-[#0E1724] rounded-2xl border border-line/80 overflow-hidden shadow-2xl group select-none">
-        {/* Ambient Blurred Background for Immersive Atmosphere */}
-        <div className="absolute inset-0 overflow-hidden opacity-30 blur-3xl scale-110 pointer-events-none">
-          <Image
-            src={currentImg}
-            alt=""
-            fill
-            referrerPolicy="no-referrer"
-            className="object-cover"
-          />
-        </div>
+        {/* Clean CSS Ambient Gradient Backdrop */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(34,64,95,0.45)_0%,rgba(14,23,36,0.96)_72%)]"
+        />
 
         {/* Foreground Full-Vehicle Display (object-contain ensures zero cropped parts) */}
         <div className="relative w-full h-full flex items-center justify-center p-3 sm:p-6 md:p-8">
@@ -56,6 +77,7 @@ export default function ImageCarousel({ images = [], alt }) {
             src={currentImg}
             alt={`${alt || 'Commercial Vehicle'} — photo ${index + 1}`}
             fill
+            sizes="100vw"
             referrerPolicy="no-referrer"
             className="object-contain drop-shadow-2xl transition-opacity duration-300"
             priority={index === 0}
@@ -117,7 +139,7 @@ export default function ImageCarousel({ images = [], alt }) {
       {safeImages.length > 1 && (
         <div className="flex items-center gap-2.5 sm:gap-3.5 overflow-x-auto py-3.5 px-1 scrollbar-thin scrollbar-thumb-slate-400/40">
           {safeImages.map((img, i) => {
-            const thumbUrl = resolveImage(img, 300);
+            const thumbUrl = resolveImage(img);
             const isSelected = i === index;
             return (
               <button
@@ -135,6 +157,7 @@ export default function ImageCarousel({ images = [], alt }) {
                   src={thumbUrl}
                   alt={`Thumbnail ${i + 1}`}
                   fill
+                  sizes="112px"
                   referrerPolicy="no-referrer"
                   className="object-cover"
                 />
@@ -149,7 +172,12 @@ export default function ImageCarousel({ images = [], alt }) {
 
       {/* Fullscreen Lightbox Modal */}
       {isLightboxOpen && (
-        <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-4 sm:p-8 animate-in fade-in duration-200">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${alt || 'Vehicle'} fullscreen gallery`}
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-4 sm:p-8"
+        >
           {/* Lightbox Header */}
           <div className="flex items-center justify-between text-white pb-3 border-b border-white/10 shrink-0">
             <div>
@@ -176,6 +204,7 @@ export default function ImageCarousel({ images = [], alt }) {
               src={currentImg}
               alt={`${alt || 'Vehicle'} — fullscreen`}
               fill
+              sizes="100vw"
               referrerPolicy="no-referrer"
               className="object-contain"
             />
@@ -209,15 +238,17 @@ export default function ImageCarousel({ images = [], alt }) {
                 <button
                   key={i}
                   type="button"
+                  aria-label={`View fullscreen photo ${i + 1}`}
                   onClick={() => setIndex(i)}
                   className={`relative w-16 h-12 rounded-lg overflow-hidden border-2 transition-all cursor-pointer shrink-0 ${
                     i === index ? 'border-[#B69255] scale-105' : 'border-white/20 opacity-60'
                   }`}
                 >
                   <Image
-                    src={resolveImage(img, 150)}
+                    src={resolveImage(img)}
                     alt=""
                     fill
+                    sizes="64px"
                     referrerPolicy="no-referrer"
                     className="object-cover"
                   />

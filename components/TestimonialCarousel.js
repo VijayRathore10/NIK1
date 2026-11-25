@@ -1,26 +1,30 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { resolveImage } from '@/lib/image';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-function TestimonialImageCarousel({ photos, customerName }) {
+function TestimonialImageCarousel({ photos, customerName, prefersReducedMotion }) {
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
   // Maximum 4 pictures
-  const displayPhotos = (photos && photos.length > 0 ? photos : ['https://picsum.photos/seed/customer/800/800']).slice(0, 4);
+  const displayPhotos = (
+    photos && photos.length > 0
+      ? photos
+      : ['https://picsum.photos/seed/customer/800/800']
+  ).slice(0, 4);
 
-  // Auto-advance pictures every 2 seconds when not hovered
+  // Auto-advance pictures every 3.5 seconds when not hovered and reduced motion is off
   useEffect(() => {
-    if (displayPhotos.length <= 1 || isHovered) return;
+    if (displayPhotos.length <= 1 || isHovered || prefersReducedMotion) return;
     const interval = setInterval(() => {
       setPhotoIndex((prev) => (prev === displayPhotos.length - 1 ? 0 : prev + 1));
-    }, 2000);
+    }, 3500);
     return () => clearInterval(interval);
-  }, [displayPhotos.length, isHovered]);
+  }, [displayPhotos.length, isHovered, prefersReducedMotion]);
 
   const prevPhoto = (e) => {
     e.stopPropagation();
@@ -32,43 +36,24 @@ function TestimonialImageCarousel({ photos, customerName }) {
     setPhotoIndex((prev) => (prev === displayPhotos.length - 1 ? 0 : prev + 1));
   };
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    // Immediately move to next picture as soon as the user exits the picture zone
-    if (displayPhotos.length > 1) {
-      setPhotoIndex((prev) => (prev === displayPhotos.length - 1 ? 0 : prev + 1));
-    }
-  };
-
-  const currentPhoto = resolveImage(displayPhotos[photoIndex], 1000);
+  const currentPhoto = resolveImage(displayPhotos[photoIndex]);
 
   return (
     <div
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className="relative w-full h-full bg-[#0B1522] overflow-hidden flex items-center justify-center group select-none"
     >
-      {/* Ambient background blur for cinematic depth while keeping foreground 100% fitted */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20 filter blur-2xl scale-125">
-        <Image
-          src={currentPhoto}
-          alt=""
-          fill
-          sizes="(max-width: 1024px) 100vw, 50vw"
-          aria-hidden="true"
-          referrerPolicy="no-referrer"
-          className="object-cover"
-        />
-      </div>
+      {/* Clean CSS Ambient Gradient Backdrop */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(34,64,95,0.45)_0%,rgba(11,21,34,0.98)_75%)]"
+      />
 
       {/* Subtle vignette overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 pointer-events-none z-[1]" />
 
-      {/* Foreground Fitted Image - completely fitted with object-contain, never stretched or cropped */}
+      {/* Foreground Fitted Image */}
       <div className="relative w-full h-full p-4 sm:p-6 md:p-8 flex items-center justify-center z-[2]">
         <Image
           src={currentPhoto}
@@ -77,7 +62,6 @@ function TestimonialImageCarousel({ photos, customerName }) {
           referrerPolicy="no-referrer"
           className="object-contain p-2 transition-all duration-300"
           sizes="(max-width: 1024px) 100vw, 50vw"
-          priority
         />
       </div>
 
@@ -86,6 +70,7 @@ function TestimonialImageCarousel({ photos, customerName }) {
         <>
           <div className="absolute inset-y-0 left-0 flex items-center px-3 z-10 pointer-events-none">
             <button
+              type="button"
               onClick={prevPhoto}
               aria-label="Previous customer photo"
               className="pointer-events-auto w-9 h-9 rounded-full bg-steel/80 hover:bg-amber text-white hover:text-steel flex items-center justify-center backdrop-blur-md transition-all shadow-lg cursor-pointer"
@@ -95,6 +80,7 @@ function TestimonialImageCarousel({ photos, customerName }) {
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center px-3 z-10 pointer-events-none">
             <button
+              type="button"
               onClick={nextPhoto}
               aria-label="Next customer photo"
               className="pointer-events-auto w-9 h-9 rounded-full bg-steel/80 hover:bg-amber text-white hover:text-steel flex items-center justify-center backdrop-blur-md transition-all shadow-lg cursor-pointer"
@@ -108,6 +94,7 @@ function TestimonialImageCarousel({ photos, customerName }) {
             {displayPhotos.map((_, i) => (
               <button
                 key={i}
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   setPhotoIndex(i);
@@ -146,30 +133,43 @@ function getQuoteFontSize(quote = '') {
 export default function TestimonialCarousel({ testimonials }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  // Detect prefers-reduced-motion user preference
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updatePref = () => setPrefersReducedMotion(mediaQuery.matches);
+    updatePref();
+    mediaQuery.addEventListener?.('change', updatePref);
+    return () => mediaQuery.removeEventListener?.('change', updatePref);
+  }, []);
 
   // Sort basis position numbering system (1, 2, 3...)
-  const sortedTestimonials = [...(testimonials || [])].sort((a, b) => {
-    const hasA = a.order !== undefined && a.order !== null && a.order !== '';
-    const hasB = b.order !== undefined && b.order !== null && b.order !== '';
-    const orderA = hasA ? Number(a.order) : Infinity;
-    const orderB = hasB ? Number(b.order) : Infinity;
-    return orderA - orderB;
-  });
+  const sortedTestimonials = useMemo(() => {
+    return [...(testimonials || [])].sort((a, b) => {
+      const hasA = a.order !== undefined && a.order !== null && a.order !== '';
+      const hasB = b.order !== undefined && b.order !== null && b.order !== '';
+      const orderA = hasA ? Number(a.order) : Infinity;
+      const orderB = hasB ? Number(b.order) : Infinity;
+      return orderA - orderB;
+    });
+  }, [testimonials]);
 
   const total = sortedTestimonials.length;
 
-  // Auto-advance entire testimonial carousel every 3 seconds
+  // Auto-advance testimonial carousel every 6 seconds unless hovered or reduced motion enabled
   useEffect(() => {
-    if (total <= 1 || isPaused) return;
+    if (total <= 1 || isPaused || prefersReducedMotion) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev === total - 1 ? 0 : prev + 1));
-    }, 3000);
+    }, 6000);
     return () => clearInterval(interval);
-  }, [total, isPaused]);
+  }, [total, isPaused, prefersReducedMotion]);
 
   if (!total) return null;
 
-  const current = sortedTestimonials[currentIndex];
+  const current = sortedTestimonials[currentIndex % total];
   const isAlternate = currentIndex % 2 !== 0;
 
   const prevTestimonial = () => {
@@ -196,11 +196,11 @@ export default function TestimonialCarousel({ testimonials }) {
 
           {/* Testimonial Nav Arrows, Pagination Bars and Counter */}
           <div className="flex items-center gap-3 self-end sm:self-auto">
-            {/* Quick jump pagination bars */}
             <div className="flex items-center gap-1.5 mr-2">
               {sortedTestimonials.map((_, idx) => (
                 <button
                   key={idx}
+                  type="button"
                   onClick={() => setCurrentIndex(idx)}
                   aria-label={`Go to testimonial ${idx + 1}`}
                   className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
@@ -216,6 +216,7 @@ export default function TestimonialCarousel({ testimonials }) {
               {currentIndex + 1} / {total}
             </span>
             <button
+              type="button"
               onClick={prevTestimonial}
               aria-label="Previous testimonial"
               className="w-11 h-11 rounded-lg border border-paper/30 hover:bg-amber hover:text-steel hover:border-amber flex items-center justify-center transition-all cursor-pointer"
@@ -223,6 +224,7 @@ export default function TestimonialCarousel({ testimonials }) {
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
+              type="button"
               onClick={nextTestimonial}
               aria-label="Next testimonial"
               className="w-11 h-11 rounded-lg border border-paper/30 hover:bg-amber hover:text-steel hover:border-amber flex items-center justify-center transition-all cursor-pointer"
@@ -237,10 +239,10 @@ export default function TestimonialCarousel({ testimonials }) {
           <AnimatePresence mode="wait" initial={false}>
             <motion.article
               key={`testimonial-${current._id || currentIndex}`}
-              initial={{ opacity: 0, y: 12, scale: 0.99 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 12, scale: 0.99 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -12, scale: 0.99 }}
-              transition={{ duration: 0.35, ease: 'easeInOut' }}
+              exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, scale: 0.99 }}
+              transition={{ duration: prefersReducedMotion ? 0.05 : 0.35, ease: 'easeInOut' }}
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
               className="w-full h-full bg-paper text-steel rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 border border-line"
@@ -255,6 +257,7 @@ export default function TestimonialCarousel({ testimonials }) {
                   key={`carousel-${current._id || currentIndex}`}
                   photos={current.photos}
                   customerName={current.customerName}
+                  prefersReducedMotion={prefersReducedMotion}
                 />
               </div>
 
@@ -271,7 +274,7 @@ export default function TestimonialCarousel({ testimonials }) {
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber/15 text-amber-dark flex items-center justify-center">
                       <Quote className="w-5 h-5 sm:w-6 sm:h-6 fill-amber/30" />
                     </div>
-                    </div>
+                  </div>
 
                   {/* Quote text container that accommodates text without expanding or jumping the card */}
                   <div className="flex-1 min-h-0 overflow-y-auto pr-2">

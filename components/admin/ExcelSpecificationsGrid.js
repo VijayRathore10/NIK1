@@ -1,45 +1,54 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { ClipboardPaste, Sparkles, Trash2, CheckCircle2, AlertCircle, X } from 'lucide-react';
+import { ClipboardPaste, Sparkles, Trash2, CheckCircle2, X } from 'lucide-react';
 
 const MAX_ROWS = 30;
 
-export default function ExcelSpecificationsGrid({ specifications = [], onChange }) {
-  // Initialize fixed 30 rows
-  const [rows, setRows] = useState(() => {
-    const initial = [];
-    for (let i = 0; i < MAX_ROWS; i++) {
-      const existing = specifications && specifications[i];
-      initial.push({
-        id: i,
-        label: existing?.label || '',
-        value: existing?.value || '',
-      });
-    }
-    return initial;
-  });
+function buildFixedRows(specifications) {
+  const rows = [];
+  for (let i = 0; i < MAX_ROWS; i++) {
+    const existing = Array.isArray(specifications) ? specifications[i] : null;
+    rows.push({
+      id: i,
+      label: existing?.label || '',
+      value: existing?.value || '',
+    });
+  }
+  return rows;
+}
+
+export default function ExcelSpecificationsGrid({
+  specifications = [],
+  onChange,
+  resetKey = 'default',
+}) {
+  const [rows, setRows] = useState(() => buildFixedRows(specifications));
+  const lastResetKeyRef = useRef(resetKey);
 
   const [showPasteModal, setShowPasteModal] = useState(false);
   const [pasteText, setPasteText] = useState('');
+  const [confirmClear, setConfirmClear] = useState(false);
   const [notification, setNotification] = useState('');
   const notifTimeout = useRef(null);
+  const clearTimeoutRef = useRef(null);
 
-  // Sync when prop changes
+  // Only re-initialize the 30-row grid when switching to a different vehicle (resetKey changes),
+  // preventing row-jumping and cursor loss when typing into lower rows while earlier rows are blank.
   useEffect(() => {
-    setRows(() => {
-      const next = [];
-      for (let i = 0; i < MAX_ROWS; i++) {
-        const existing = specifications && specifications[i];
-        next.push({
-          id: i,
-          label: existing?.label || '',
-          value: existing?.value || '',
-        });
-      }
-      return next;
-    });
-  }, [specifications]);
+    if (lastResetKeyRef.current !== resetKey) {
+      lastResetKeyRef.current = resetKey;
+      setRows(buildFixedRows(specifications));
+      setConfirmClear(false);
+    }
+  }, [resetKey, specifications]);
+
+  useEffect(() => {
+    return () => {
+      if (notifTimeout.current) clearTimeout(notifTimeout.current);
+      if (clearTimeoutRef.current) clearTimeout(clearTimeoutRef.current);
+    };
+  }, []);
 
   const showToast = (msg) => {
     setNotification(msg);
@@ -48,7 +57,6 @@ export default function ExcelSpecificationsGrid({ specifications = [], onChange 
   };
 
   const emitChange = (newRows) => {
-    // Clean: filter out completely blank rows, max 30 rows
     const cleaned = newRows
       .filter((r) => (r.label && r.label.trim()) || (r.value && r.value.trim()))
       .slice(0, MAX_ROWS)
@@ -100,7 +108,6 @@ export default function ExcelSpecificationsGrid({ specifications = [], onChange 
     return items;
   };
 
-  // Direct paste into any cell
   const handleCellPaste = (e, startIndex) => {
     const clipboardText = e.clipboardData?.getData('text/plain') || '';
 
@@ -123,11 +130,10 @@ export default function ExcelSpecificationsGrid({ specifications = [], onChange 
 
       setRows(updated);
       emitChange(updated);
-      showToast(`✓ Pasted ${parsed.length} rows directly from Excel!`);
+      showToast(`Pasted ${parsed.length} rows directly from Excel.`);
     }
   };
 
-  // Quick Paste Modal Apply
   const applyPasteModal = () => {
     if (!pasteText.trim()) return;
     const parsed = parseExcelText(pasteText);
@@ -147,19 +153,22 @@ export default function ExcelSpecificationsGrid({ specifications = [], onChange 
     emitChange(updated);
     setShowPasteModal(false);
     setPasteText('');
-    showToast(`✓ Successfully applied ${parsed.length} rows from Excel!`);
+    showToast(`Applied ${parsed.length} rows from spreadsheet.`);
   };
 
-  const clearAll = () => {
-    if (window.confirm('Clear all 30 specification rows?')) {
-      const cleared = [];
-      for (let i = 0; i < MAX_ROWS; i++) {
-        cleared.push({ id: i, label: '', value: '' });
-      }
-      setRows(cleared);
-      emitChange(cleared);
-      showToast('All rows cleared. Empty rows will not appear on the website.');
+  const handleClearClick = () => {
+    if (!confirmClear) {
+      setConfirmClear(true);
+      if (clearTimeoutRef.current) clearTimeout(clearTimeoutRef.current);
+      clearTimeoutRef.current = setTimeout(() => setConfirmClear(false), 4000);
+      return;
     }
+
+    const cleared = buildFixedRows([]);
+    setRows(cleared);
+    emitChange(cleared);
+    setConfirmClear(false);
+    showToast('All rows cleared. Empty rows will not appear on the website.');
   };
 
   const fillTemplate = () => {
@@ -197,7 +206,7 @@ export default function ExcelSpecificationsGrid({ specifications = [], onChange 
 
     setRows(updated);
     emitChange(updated);
-    showToast('Loaded standard commercial vehicle specification template!');
+    showToast('Loaded standard commercial vehicle specification template.');
   };
 
   const activeCount = rows.filter(
@@ -224,8 +233,12 @@ export default function ExcelSpecificationsGrid({ specifications = [], onChange 
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Copy 2 columns from Excel and press <code className="bg-slate-800 px-1 py-0.5 rounded text-amber-300 font-mono">Ctrl+V</code> directly inside any cell.
-            <span className="text-amber-400/90 font-medium ml-1">Empty rows will not be shown on the live web page.</span>
+            Copy 2 columns from Excel and press{' '}
+            <code className="bg-slate-800 px-1 py-0.5 rounded text-amber-300 font-mono">Ctrl+V</code>{' '}
+            directly inside any cell.
+            <span className="text-amber-400/90 font-medium ml-1">
+              Empty rows will not be shown on the live web page.
+            </span>
           </p>
         </div>
 
@@ -251,11 +264,15 @@ export default function ExcelSpecificationsGrid({ specifications = [], onChange 
 
           <button
             type="button"
-            onClick={clearAll}
-            className="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-colors flex items-center gap-1 cursor-pointer"
+            onClick={handleClearClick}
+            className={`px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1 cursor-pointer ${
+              confirmClear
+                ? 'bg-red-600 hover:bg-red-500 text-white border-red-500 font-bold'
+                : 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30'
+            }`}
           >
             <Trash2 className="w-3.5 h-3.5" />
-            <span>Clear</span>
+            <span>{confirmClear ? 'Confirm Clear?' : 'Clear'}</span>
           </button>
         </div>
       </div>
@@ -270,7 +287,8 @@ export default function ExcelSpecificationsGrid({ specifications = [], onChange 
           <button
             type="button"
             onClick={() => setNotification('')}
-            className="text-emerald-300 hover:text-white"
+            aria-label="Dismiss message"
+            className="text-emerald-300 hover:text-white cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -290,13 +308,15 @@ export default function ExcelSpecificationsGrid({ specifications = [], onChange 
             <button
               type="button"
               onClick={() => setShowPasteModal(false)}
+              aria-label="Close paste drawer"
               className="text-slate-400 hover:text-white cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
           <p className="text-xs text-slate-400 mb-2">
-            Select 2 columns in your spreadsheet (Col 1 = Specification Label, Col 2 = Value), copy (<code className="text-amber-300">Ctrl+C</code>), and paste below:
+            Select 2 columns in your spreadsheet (Col 1 = Specification Label, Col 2 = Value), copy (
+            <code className="text-amber-300">Ctrl+C</code>), and paste below:
           </p>
           <textarea
             value={pasteText}
@@ -391,10 +411,13 @@ export default function ExcelSpecificationsGrid({ specifications = [], onChange 
 
       <div className="mt-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between text-[11px] text-slate-400 gap-1.5">
         <span>
-          💡 <strong>Tip:</strong> Press <code className="bg-slate-800 px-1 py-0.5 rounded text-amber-300">Ctrl+V</code> inside any cell to paste spreadsheet data starting from that row.
+          <strong>Tip:</strong> Press{' '}
+          <code className="bg-slate-800 px-1 py-0.5 rounded text-amber-300">Ctrl+V</code> inside any
+          cell to paste spreadsheet data starting from that row.
         </span>
         <span className="italic text-slate-500">
-          {MAX_ROWS - activeCount} empty row{MAX_ROWS - activeCount === 1 ? '' : 's'} will be automatically omitted on the web page.
+          {MAX_ROWS - activeCount} empty row{MAX_ROWS - activeCount === 1 ? '' : 's'} will be
+          automatically omitted on the web page.
         </span>
       </div>
     </div>

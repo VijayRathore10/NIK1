@@ -1,5 +1,3 @@
-'use client';
-
 import { Award, Globe2, Truck } from 'lucide-react';
 
 export default function AboutSection() {
@@ -27,7 +25,7 @@ export default function AboutSection() {
   return (
     <section id="about" className="w-full bg-white py-20 md:py-28 scroll-mt-20">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
-        {/* Section Header - Matching "EXPLORE OUR CATALOGUE HERE" styling & positioning */}
+        {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
           <div>
             <h2 className="font-display text-3xl md:text-5xl font-bold uppercase tracking-tight text-[#e8a23d]">
@@ -36,7 +34,7 @@ export default function AboutSection() {
           </div>
         </div>
 
-        {/* Description from the bottom-most / footer section */}
+        {/* Description */}
         <div className="mb-14 max-w-4xl">
           <p className="text-base sm:text-lg text-[#3E4C59] leading-relaxed font-normal">
             Headquartered in Delhi, NIK Exports is your reliable gateway to the global automotive market. As premier exporters and traders, we supply worldwide clients with top-tier automotive products across all categories. Partner with us for consistent, hassle-free deliveries you can always depend on.
@@ -45,12 +43,12 @@ export default function AboutSection() {
 
         {/* 3 Core Pillar Feature Cards with Golden Hover transition */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-          {cards.map((card, idx) => {
+          {cards.map((card) => {
             const Icon = card.icon;
             return (
               <div
-                key={idx}
-                className="bg-white rounded-2xl p-8 sm:p-9 flex flex-col justify-between transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1.5 border border-line hover:border-amber hover:bg-gradient-to-b hover:from-[#FFFBF2] hover:to-[#FFF5DF] group cursor-pointer"
+                key={card.title}
+                className="bg-white rounded-2xl p-8 sm:p-9 flex flex-col justify-between transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1.5 border border-line hover:border-amber hover:bg-gradient-to-b hover:from-[#FFFBF2] hover:to-[#FFF5DF] group"
               >
                 <div>
                   {/* Icon */}
@@ -59,9 +57,9 @@ export default function AboutSection() {
                   </div>
 
                   {/* Title */}
-                  <h4 className="font-display text-2xl sm:text-3xl font-bold text-steel group-hover:text-steel tracking-tight mb-4 transition-colors duration-200">
+                  <h3 className="font-display text-2xl sm:text-3xl font-bold text-steel group-hover:text-steel tracking-tight mb-4 transition-colors duration-200">
                     {card.title}
-                  </h4>
+                  </h3>
 
                   {/* Horizontal Divider Line */}
                   <div className="w-full h-[1.5px] bg-line group-hover:bg-amber/60 mb-5 transition-colors duration-200" />
@@ -79,4 +77,3 @@ export default function AboutSection() {
     </section>
   );
 }
-

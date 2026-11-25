@@ -5,17 +5,25 @@ import { doc, setDoc } from 'firebase/firestore';
 import { verifyAdminRequest, unauthorizedResponse } from '@/lib/adminAuth';
 
 const CHUNK_SIZE = 650 * 1024; // 650KB chunks for Firestore 1MB doc limit safety
+const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024; // 8 MB maximum per uploaded image
+
+// Raster formats only — SVG disallowed to prevent stored XSS
 const ALLOWED_IMAGE_EXTENSIONS = new Set([
   '.jpg',
   '.jpeg',
   '.png',
   '.webp',
   '.gif',
-  '.svg',
   '.heic',
   '.avif',
   '.bmp',
 ]);
+
+function isBlockedSvg(filename = '', mime = '') {
+  const lowerMime = String(mime || '').toLowerCase();
+  const ext = path.extname(filename || '').toLowerCase();
+  return ext === '.svg' || lowerMime.includes('svg');
+}
 
 function resolveSafeImageExt(filename, mime = '') {
   const rawExt = path.extname(filename || '').toLowerCase();
@@ -27,16 +35,29 @@ function resolveSafeImageExt(filename, mime = '') {
   if (lowerMime.includes('png')) return '.png';
   if (lowerMime.includes('webp')) return '.webp';
   if (lowerMime.includes('gif')) return '.gif';
-  if (lowerMime.includes('svg')) return '.svg';
   if (lowerMime.includes('avif')) return '.avif';
+  if (lowerMime.includes('heic')) return '.heic';
+  if (lowerMime.includes('bmp')) return '.bmp';
   return '.jpg';
+}
+
+function resolveSafeMime(ext, rawMime = '') {
+  const lower = String(rawMime || '').toLowerCase();
+  if (lower.startsWith('image/') && !lower.includes('svg')) {
+    return lower.slice(0, 64);
+  }
+  if (ext === '.png') return 'image/png';
+  if (ext === '.webp') return 'image/webp';
+  if (ext === '.gif') return 'image/gif';
+  if (ext === '.avif') return 'image/avif';
+  if (ext === '.bmp') return 'image/bmp';
+  return 'image/jpeg';
 }
 
 // Safely write to local disk with path confinement and without crashing on read-only filesystems (Cloud Run EROFS)
 function safeSaveToDisk(filename, buffer) {
   const safeName = path.basename(filename);
 
-  // 1. Write to /tmp/uploads (guaranteed writable in Linux/Cloud Run environments)
   try {
     const tmpDir = path.resolve('/tmp', 'uploads');
     if (!fs.existsSync(tmpDir)) {
@@ -50,7 +71,6 @@ function safeSaveToDisk(filename, buffer) {
     console.warn('Could not write to /tmp/uploads:', tmpErr?.message);
   }
 
-  // 2. Attempt write to public/uploads (works in local dev, ignored on EROFS read-only containers)
   try {
     const publicDir = path.resolve(process.cwd(), 'public', 'uploads');
     if (!fs.existsSync(publicDir)) {
@@ -114,15 +134,34 @@ export async function POST(request) {
     const uploadedUrls = [];
 
     if (contentType.includes('application/json')) {
-      const body = await request.json();
-      const rawList = Array.isArray(body.files) ? body.files : (body.file ? [body.file] : []);
+      const body = await request.json().catch(() => null);
+      if (!body) {
+        return Response.json({ error: 'Invalid JSON payload' }, { status: 400 });
+      }
+      const rawList = Array.isArray(body.files) ? body.files : body.file ? [body.file] : [];
 
       for (const item of rawList) {
         if (!item?.data || typeof item.data !== 'string') continue;
+        if (isBlockedSvg(item.name, item.type)) {
+          return Response.json(
+            { error: 'SVG uploads are not permitted. Please upload JPG, PNG, WEBP, GIF, or AVIF.' },
+            { status: 400 }
+          );
+        }
+
         const cleanBase64 = item.data.replace(/^data:image\/[a-z0-9-+.]+;base64,/, '');
         const buffer = Buffer.from(cleanBase64, 'base64');
-        const mime = item.type || 'image/jpeg';
-        const ext = resolveSafeImageExt(item.name || '', mime);
+
+        if (buffer.length === 0) continue;
+        if (buffer.length > MAX_FILE_SIZE_BYTES) {
+          return Response.json(
+            { error: 'Image exceeds the 8 MB maximum file size limit.' },
+            { status: 413 }
+          );
+        }
+
+        const ext = resolveSafeImageExt(item.name || '', item.type);
+        const mime = resolveSafeMime(ext, item.type);
 
         const originalBase = path
           .basename(item.name || 'image', path.extname(item.name || ''))
@@ -141,7 +180,7 @@ export async function POST(request) {
       const formData = await request.formData();
       const files = formData.getAll('files');
       const singleFile = formData.get('file');
-      const fileList = files.length > 0 ? files : (singleFile ? [singleFile] : []);
+      const fileList = files.length > 0 ? files : singleFile ? [singleFile] : [];
 
       if (fileList.length === 0) {
         return Response.json({ error: 'No files provided for upload' }, { status: 400 });
@@ -150,9 +189,31 @@ export async function POST(request) {
       for (const file of fileList) {
         if (!file || typeof file.arrayBuffer !== 'function') continue;
 
+        if (isBlockedSvg(file.name, file.type)) {
+          return Response.json(
+            { error: 'SVG uploads are not permitted. Please upload JPG, PNG, WEBP, GIF, or AVIF.' },
+            { status: 400 }
+          );
+        }
+
+        if (typeof file.size === 'number' && file.size > MAX_FILE_SIZE_BYTES) {
+          return Response.json(
+            { error: 'Image exceeds the 8 MB maximum file size limit.' },
+            { status: 413 }
+          );
+        }
+
         const buffer = Buffer.from(await file.arrayBuffer());
-        const mime = file.type || '';
-        const ext = resolveSafeImageExt(file.name || '', mime);
+        if (buffer.length === 0) continue;
+        if (buffer.length > MAX_FILE_SIZE_BYTES) {
+          return Response.json(
+            { error: 'Image exceeds the 8 MB maximum file size limit.' },
+            { status: 413 }
+          );
+        }
+
+        const ext = resolveSafeImageExt(file.name || '', file.type);
+        const mime = resolveSafeMime(ext, file.type);
 
         const originalBase = path
           .basename(file.name || 'image', path.extname(file.name || ''))
@@ -180,7 +241,7 @@ export async function POST(request) {
       count: uploadedUrls.length,
     });
   } catch (err) {
-    console.error('File upload failed:', err);
-    return Response.json({ error: err.message || 'File upload failed' }, { status: 500 });
+    console.error('[Upload] File upload failed:', err);
+    return Response.json({ error: 'File upload failed. Please try again.' }, { status: 500 });
   }
 }

@@ -1,9 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
-import ImageUploadButton from './ImageUploadButton';
+import React, { useState, useEffect } from 'react';
 import ImageDropzone from './ImageDropzone';
-import { Save, Plus, Trash2, Image as ImageIcon, CheckCircle2 } from 'lucide-react';
+import { Save, Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { DEFAULT_SITE_SETTINGS } from '@/lib/validation';
+
+const DEFAULT_HERO_IMAGES = [
+  'https://picsum.photos/seed/nik-heavy-haulage-1610/1920/1200',
+  'https://picsum.photos/seed/nik-machinery-1610/1920/1200',
+  'https://picsum.photos/seed/nik-transit-1610/1920/1200',
+  'https://picsum.photos/seed/nik-agricultural-1610/1920/1200',
+];
 
 export default function SiteSettingsEditor({ settings = {}, onSave }) {
   const [tagline, setTagline] = useState(settings?.tagline || '');
@@ -12,32 +19,41 @@ export default function SiteSettingsEditor({ settings = {}, onSave }) {
   const [contactPhone, setContactPhone] = useState(settings?.contactPhone || '');
   const [address, setAddress] = useState(settings?.address || '');
 
-  // Social Links
   const [whatsapp, setWhatsapp] = useState(settings?.socialLinks?.whatsapp || '');
   const [facebook, setFacebook] = useState(settings?.socialLinks?.facebook || '');
   const [instagram, setInstagram] = useState(settings?.socialLinks?.instagram || '');
   const [linkedin, setLinkedin] = useState(settings?.socialLinks?.linkedin || '');
 
-  // Hero Slider Images
   const [heroImages, setHeroImages] = useState(
-    settings?.heroImages || [
-      'https://picsum.photos/seed/ssg-heavy-haulage-1610/1920/1200',
-      'https://picsum.photos/seed/ssg-machinery-1610/1920/1200',
-      'https://picsum.photos/seed/ssg-transit-1610/1920/1200',
-      'https://picsum.photos/seed/ssg-agricultural-1610/1920/1200',
-    ]
+    Array.isArray(settings?.heroImages) && settings.heroImages.length > 0
+      ? settings.heroImages
+      : DEFAULT_HERO_IMAGES
   );
-  const [newHeroImageUrl, setNewHeroImageUrl] = useState('');
 
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const handleAddHeroImage = (e) => {
-    e.preventDefault();
-    if (!newHeroImageUrl.trim()) return;
-    setHeroImages([...heroImages, newHeroImageUrl.trim()]);
-    setNewHeroImageUrl('');
-  };
+  // Sync local form state when parent loads fresh settings from Firestore
+  const settingsSignature = JSON.stringify(settings || {});
+  useEffect(() => {
+    const next = settings || {};
+    setTagline(next.tagline || '');
+    setAboutText(next.aboutText || '');
+    setContactEmail(next.contactEmail || '');
+    setContactPhone(next.contactPhone || '');
+    setAddress(next.address || '');
+    setWhatsapp(next.socialLinks?.whatsapp || '');
+    setFacebook(next.socialLinks?.facebook || '');
+    setInstagram(next.socialLinks?.instagram || '');
+    setLinkedin(next.socialLinks?.linkedin || '');
+    setHeroImages(
+      Array.isArray(next.heroImages) && next.heroImages.length > 0
+        ? next.heroImages
+        : DEFAULT_HERO_IMAGES
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settingsSignature]);
 
   const handleRemoveHeroImage = (idx) => {
     setHeroImages(heroImages.filter((_, i) => i !== idx));
@@ -47,6 +63,7 @@ export default function SiteSettingsEditor({ settings = {}, onSave }) {
     e.preventDefault();
     setSaving(true);
     setSavedSuccess(false);
+    setErrorMsg('');
 
     const payload = {
       tagline: tagline.trim(),
@@ -71,25 +88,41 @@ export default function SiteSettingsEditor({ settings = {}, onSave }) {
         body: JSON.stringify(payload),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        onSave(data);
-        setSavedSuccess(true);
-        setTimeout(() => setSavedSuccess(false), 3500);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setErrorMsg(data.error || 'Failed to save settings. Please verify your inputs.');
+        return;
       }
-    } catch (err) {
-      alert('Failed to save settings: ' + err.message);
+
+      onSave(data);
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3500);
+    } catch {
+      setErrorMsg('Unable to save settings right now. Please try again.');
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <form onSubmit={handleSave} className="space-y-6 max-w-4xl select-none">
+    <form onSubmit={handleSave} className="space-y-6 max-w-4xl">
       {savedSuccess && (
-        <div className="p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4" />
+        <div
+          role="status"
+          className="p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-2"
+        >
+          <CheckCircle2 className="w-4 h-4 shrink-0" />
           <span>All site settings and hero slides saved successfully!</span>
+        </div>
+      )}
+
+      {errorMsg && (
+        <div
+          role="alert"
+          className="p-4 rounded-xl bg-red-500/15 border border-red-500/40 text-red-300 text-xs font-medium flex items-center gap-2"
+        >
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{errorMsg}</span>
         </div>
       )}
 
@@ -123,6 +156,7 @@ export default function SiteSettingsEditor({ settings = {}, onSave }) {
               <button
                 type="button"
                 onClick={() => handleRemoveHeroImage(i)}
+                aria-label={`Remove slide ${i + 1}`}
                 className="absolute top-1.5 right-1.5 p-1 rounded-md bg-black/70 hover:bg-red-600 text-white transition-colors cursor-pointer"
                 title="Remove Slide"
               >
@@ -155,7 +189,7 @@ export default function SiteSettingsEditor({ settings = {}, onSave }) {
             type="text"
             value={tagline}
             onChange={(e) => setTagline(e.target.value)}
-            placeholder="COMMERCIAL VEHICLES & FLEET EXPORT"
+            placeholder={DEFAULT_SITE_SETTINGS.tagline}
             className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-amber-400"
           />
         </div>
@@ -194,7 +228,7 @@ export default function SiteSettingsEditor({ settings = {}, onSave }) {
               type="email"
               value={contactEmail}
               onChange={(e) => setContactEmail(e.target.value)}
-              placeholder="export@nikexports.com"
+              placeholder={DEFAULT_SITE_SETTINGS.contactEmail}
               className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-amber-400"
             />
           </div>
@@ -207,7 +241,7 @@ export default function SiteSettingsEditor({ settings = {}, onSave }) {
               type="text"
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
-              placeholder="+971 50 698 8527"
+              placeholder={DEFAULT_SITE_SETTINGS.contactPhone}
               className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-amber-400"
             />
           </div>
@@ -221,7 +255,7 @@ export default function SiteSettingsEditor({ settings = {}, onSave }) {
             rows={2}
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder="SevenSeas Global Trading FZ LLC, Compass Building, Al Shohada Road, Ras Al Khaimah, UAE"
+            placeholder={DEFAULT_SITE_SETTINGS.address}
             className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-amber-400"
           />
         </div>
@@ -247,7 +281,7 @@ export default function SiteSettingsEditor({ settings = {}, onSave }) {
               type="text"
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
-              placeholder="https://wa.me/971506988527"
+              placeholder={DEFAULT_SITE_SETTINGS.socialLinks.whatsapp}
               className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white font-mono focus:outline-none focus:border-amber-400"
             />
           </div>

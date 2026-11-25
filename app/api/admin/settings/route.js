@@ -1,5 +1,7 @@
+import { revalidatePath } from 'next/cache';
 import { getDbSiteSettings, saveDbSiteSettings } from '@/lib/db';
 import { verifyAdminRequest, unauthorizedResponse } from '@/lib/adminAuth';
+import { sanitizeSiteSettingsPayload } from '@/lib/validation';
 
 export async function GET(request) {
   if (!(await verifyAdminRequest(request))) {
@@ -15,11 +17,24 @@ export async function POST(request) {
     return unauthorizedResponse();
   }
 
+  let body;
   try {
-    const data = await request.json();
-    const saved = await saveDbSiteSettings(data);
+    body = await request.json();
+  } catch {
+    return Response.json({ error: 'Invalid JSON payload' }, { status: 400 });
+  }
+
+  const { data: sanitized, error } = sanitizeSiteSettingsPayload(body);
+  if (error) {
+    return Response.json({ error }, { status: 400 });
+  }
+
+  try {
+    const saved = await saveDbSiteSettings(sanitized);
+    revalidatePath('/', 'layout');
     return Response.json(saved);
   } catch (err) {
-    return Response.json({ error: err.message || 'Failed to save settings' }, { status: 500 });
+    console.error('[Admin Settings] Failed to save settings:', err);
+    return Response.json({ error: 'Failed to save settings' }, { status: 500 });
   }
 }

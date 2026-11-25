@@ -45,14 +45,14 @@ export default function ProductCard({ product }) {
   return (
     <Link
       href={`/product/${product.slug}`}
-      prefetch={true}
       className="group flex flex-col bg-white border border-line hover:border-amber hover:shadow-xl transition-all duration-300 rounded-xl overflow-hidden"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-steel/5 rounded-t-xl">
         <Image
-          src={resolveImage(product.cardImage, 600)}
+          src={resolveImage(product.cardImage)}
           alt={product.name || 'Vehicle'}
           fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           referrerPolicy="no-referrer"
           className="object-cover group-hover:scale-105 transition-transform duration-500"
         />

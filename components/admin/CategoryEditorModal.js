@@ -1,16 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import ImageUploadButton from './ImageUploadButton';
 import ImageDropzone from './ImageDropzone';
-import { X, Save, Image as ImageIcon } from 'lucide-react';
+import { X, Save } from 'lucide-react';
 
 export default function CategoryEditorModal({ category = null, onClose, onSave }) {
   const isEditing = Boolean(category?._id || category?.slug);
 
   const [title, setTitle] = useState(category?.title || '');
   const [slug, setSlug] = useState(category?.slug || '');
-  const [image, setImage] = useState(category?.image || 'https://picsum.photos/seed/category/800/600');
+  const [image, setImage] = useState(
+    category?.image || 'https://picsum.photos/seed/category/800/600'
+  );
   const [order, setOrder] = useState(category?.order !== undefined ? category.order : 0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -49,7 +50,7 @@ export default function CategoryEditorModal({ category = null, onClose, onSave }
       });
 
       if (!res.ok) {
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         throw new Error(data.error || 'Failed to save category');
       }
 
@@ -64,9 +65,13 @@ export default function CategoryEditorModal({ category = null, onClose, onSave }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm select-none">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={isEditing ? 'Edit Category' : 'Add New Category'}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+    >
       <div className="relative w-full max-w-lg bg-[#131D2F] border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden text-slate-100 flex flex-col">
-        {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
           <div>
             <h3 className="text-base font-bold text-white uppercase tracking-wider">
@@ -77,17 +82,21 @@ export default function CategoryEditorModal({ category = null, onClose, onSave }
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close modal"
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 rounded-lg bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-medium">
+            <div
+              role="alert"
+              className="p-3 rounded-lg bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-medium"
+            >
               {error}
             </div>
           )}
@@ -143,7 +152,6 @@ export default function CategoryEditorModal({ category = null, onClose, onSave }
             />
           </div>
 
-          {/* Footer */}
           <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
             <button
               type="button"

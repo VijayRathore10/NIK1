@@ -1,6 +1,8 @@
 import ImageCarousel from '@/components/ImageCarousel';
 import InquiryForm from '@/components/InquiryForm';
-import { getProductBySlug, getProducts } from '@/lib/data';
+import { getProductBySlug, getProducts, getSiteSettings } from '@/lib/data';
+import { resolveImage } from '@/lib/image';
+import { formatWhatsAppUrl, getSiteBaseUrl } from '@/lib/validation';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -12,28 +14,52 @@ import {
   MessageCircle,
 } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 300;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const products = await getProducts();
-  return (products || []).map((p) => ({ slug: p.slug }));
+  return (products || [])
+    .filter((p) => p?.slug)
+    .map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) return { title: 'Vehicle Details' };
+
+  const description =
+    product.description?.slice(0, 160) ||
+    `Specifications and international export quotation for ${product.name} from NIK EXPORTS.`;
+  const ogImage = resolveImage(product.cardImage || product.gallery?.[0]);
+
   return {
     title: product.name,
-    description: product.description || `Specifications and export quotation for ${product.name}.`,
+    description,
+    alternates: { canonical: `/product/${product.slug}` },
+    openGraph: {
+      type: 'website',
+      title: `${product.name} | NIK EXPORTS`,
+      description,
+      url: `/product/${product.slug}`,
+      images: [{ url: ogImage, alt: product.name }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${product.name} | NIK EXPORTS`,
+      description,
+      images: [ogImage],
+    },
   };
 }
 
 export default async function ProductPage({ params }) {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const [product, settings] = await Promise.all([
+    getProductBySlug(slug),
+    getSiteSettings(),
+  ]);
 
   if (!product || !product.name) return notFound();
 
@@ -43,22 +69,63 @@ export default async function ProductPage({ params }) {
     .slice(0, 30);
   const highlights = (product.highlights || []).filter(Boolean);
 
-  const whatsappMessage = encodeURIComponent(
-    `Hello SSG Motors, I would like an export quotation and port delivery details for: ${product.name}`
+  const whatsappUrl = formatWhatsAppUrl(
+    settings?.socialLinks?.whatsapp || settings?.contactPhone,
+    `Hello NIK EXPORTS, I would like an export quotation and port delivery details for: ${product.name}`
   );
-  const whatsappUrl = `https://wa.me/971506988527?text=${whatsappMessage}`;
+
+  const baseUrl = getSiteBaseUrl();
+  const primaryImage = resolveImage(product.cardImage || product.gallery?.[0]);
+  const absoluteImage = primaryImage.startsWith('/')
+    ? `${baseUrl}${primaryImage}`
+    : primaryImage;
+
+  const productSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description:
+      product.description ||
+      `Export-ready ${product.name} supplied worldwide by NIK EXPORTS.`,
+    image: absoluteImage,
+    category: product.category?.title || 'Commercial Vehicles',
+    brand: {
+      '@type': 'Organization',
+      name: 'NIK EXPORTS',
+    },
+    offers: {
+      '@type': 'Offer',
+      url: `${baseUrl}/product/${product.slug}`,
+      availability: 'https://schema.org/InStock',
+      seller: {
+        '@type': 'Organization',
+        name: 'NIK EXPORTS',
+      },
+    },
+  };
 
   return (
     <article className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productSchema).replace(/</g, '\\u003c'),
+        }}
+      />
+
       {/* 1. Breadcrumb Navigation */}
       <nav aria-label="Breadcrumb" className="mono-label text-[11px] uppercase text-graphite mb-4 sm:mb-6 flex items-center flex-wrap gap-1.5">
         <Link href="/" className="hover:text-freight transition-colors">
           Home
         </Link>
-        <span className="text-graphite/60">/</span>
-        <Link href={`/category/${product.category?.slug}`} className="hover:text-freight transition-colors">
-          {product.category?.title}
-        </Link>
+        {product.category?.slug && (
+          <>
+            <span className="text-graphite/60">/</span>
+            <Link href={`/category/${product.category.slug}`} className="hover:text-freight transition-colors">
+              {product.category.title}
+            </Link>
+          </>
+        )}
         <span className="text-graphite/60">/</span>
         <span className="text-steel font-bold truncate max-w-[280px] sm:max-w-md">
           {product.name}
@@ -126,7 +193,7 @@ export default async function ProductPage({ params }) {
         <section aria-label="Vehicle Overview" className="w-full mb-10 sm:mb-12 bg-white p-6 sm:p-8 lg:p-10 rounded-2xl border border-line/80 shadow-2xs">
           <div className="flex items-center gap-2.5 mb-4 pb-3 border-b border-line/60">
             <h2 className="font-display text-2xl sm:text-3xl font-bold text-steel">
-              Vehicle Overview & Inspection Description
+              Vehicle Overview &amp; Inspection Description
             </h2>
           </div>
           <p className="text-base sm:text-lg leading-relaxed text-steel/90 whitespace-pre-line max-w-none">
@@ -139,7 +206,6 @@ export default async function ProductPage({ params }) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         {/* Left Column (7 of 12 cols): 30-Row Specifications Grid & Export Pillars */}
         <div className="lg:col-span-7 space-y-8">
-          {/* 30-Row Excel Specifications Table */}
           {specs.length > 0 && (
             <section aria-label="Technical Specifications" className="bg-white p-6 sm:p-8 rounded-xl border border-line shadow-2xs">
               <div className="mb-4 pb-3 border-b border-line">
@@ -180,7 +246,7 @@ export default async function ProductPage({ params }) {
             <div className="p-4 bg-white/70 border border-line rounded-lg flex items-start gap-3">
               <ShieldCheck className="w-5 h-5 text-amber-dark shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-xs font-bold uppercase text-steel">Inspected & Verified</h3>
+                <h3 className="text-xs font-bold uppercase text-steel">Inspected &amp; Verified</h3>
                 <p className="text-[11px] text-graphite mt-0.5">Pre-shipment mechanical and engine diagnostics.</p>
               </div>
             </div>
@@ -197,7 +263,7 @@ export default async function ProductPage({ params }) {
               <FileCheck className="w-5 h-5 text-amber-dark shrink-0 mt-0.5" />
               <div>
                 <h3 className="text-xs font-bold uppercase text-steel">Export Documentation</h3>
-                <p className="text-[11px] text-graphite mt-0.5">Original bill of lading, inspection certs & clearance.</p>
+                <p className="text-[11px] text-graphite mt-0.5">Original bill of lading, inspection certs &amp; clearance.</p>
               </div>
             </div>
           </div>
@@ -218,7 +284,6 @@ export default async function ProductPage({ params }) {
               </p>
             </div>
 
-            {/* Target Vehicle Tag */}
             <div className="mb-5 p-3 rounded-lg bg-paper border border-line flex items-center justify-between gap-2">
               <div className="truncate">
                 <span className="block text-[10px] uppercase font-mono text-graphite">Selected Machine:</span>
@@ -227,10 +292,8 @@ export default async function ProductPage({ params }) {
               <Truck className="w-5 h-5 text-amber-dark shrink-0" />
             </div>
 
-            {/* Interactive Quotation Form */}
             <InquiryForm productName={product.name} />
 
-            {/* Direct Instant Contact Options - WhatsApp Only (No Phone Mentions) */}
             <div className="mt-6 pt-5 border-t border-line/80 space-y-2.5">
               <p className="text-[11px] uppercase font-mono text-graphite text-center">
                 Need instant assistance? Connect directly on WhatsApp:

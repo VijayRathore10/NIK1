@@ -5,18 +5,19 @@
       "description": "Commercial vehicle or machinery in catalog",
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
-        "slug": { "type": "string" },
+        "_id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "slug": { "type": "string", "minLength": 1, "maxLength": 120 },
         "category": { "type": "object" },
-        "cardImage": { "type": "string" },
+        "cardImage": { "type": "string", "maxLength": 2048 },
         "gallery": { "type": "array" },
         "highlights": { "type": "array" },
         "specifications": { "type": "array" },
-        "description": { "type": "string" },
-        "availability": { "type": "string" },
+        "description": { "type": "string", "maxLength": 5000 },
+        "availability": { "type": "string", "maxLength": 80 },
         "featured": { "type": "boolean" },
         "order": { "type": "number" },
-        "updatedAt": { "type": "string" }
+        "updatedAt": { "type": "string", "maxLength": 64 }
       },
       "required": ["name", "slug"]
     },
@@ -25,9 +26,10 @@
       "description": "Vehicle or machinery category",
       "type": "object",
       "properties": {
-        "title": { "type": "string" },
-        "slug": { "type": "string" },
-        "image": { "type": "string" },
+        "_id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "slug": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "image": { "type": "string", "maxLength": 2048 },
         "order": { "type": "number" }
       },
       "required": ["title", "slug"]
@@ -37,9 +39,10 @@
       "description": "Customer testimonial and delivery proof",
       "type": "object",
       "properties": {
-        "customerName": { "type": "string" },
-        "customerDetail": { "type": "string" },
-        "quote": { "type": "string" },
+        "_id": { "type": "string", "maxLength": 128 },
+        "customerName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "customerDetail": { "type": "string", "maxLength": 160 },
+        "quote": { "type": "string", "minLength": 1, "maxLength": 2000 },
         "photos": { "type": "array" },
         "order": { "type": "number" }
       },
@@ -50,11 +53,11 @@
       "description": "Global website contact details and hero slider",
       "type": "object",
       "properties": {
-        "tagline": { "type": "string" },
-        "aboutText": { "type": "string" },
-        "contactEmail": { "type": "string" },
-        "contactPhone": { "type": "string" },
-        "address": { "type": "string" },
+        "tagline": { "type": "string", "maxLength": 200 },
+        "aboutText": { "type": "string", "maxLength": 2500 },
+        "contactEmail": { "type": "string", "maxLength": 254 },
+        "contactPhone": { "type": "string", "maxLength": 40 },
+        "address": { "type": "string", "maxLength": 400 },
         "socialLinks": { "type": "object" },
         "heroImages": { "type": "array" }
       }
@@ -64,12 +67,13 @@
       "description": "Customer inquiry and lead request",
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
-        "email": { "type": "string" },
-        "phone": { "type": "string" },
-        "message": { "type": "string" },
-        "product": { "type": "string" },
-        "submittedAt": { "type": "string" }
+        "_id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "email": { "type": "string", "minLength": 3, "maxLength": 254 },
+        "phone": { "type": "string", "maxLength": 40 },
+        "message": { "type": "string", "minLength": 1, "maxLength": 3000 },
+        "product": { "type": "string", "maxLength": 200 },
+        "submittedAt": { "type": "string", "maxLength": 64 }
       },
       "required": ["name", "email", "message"]
     },
@@ -78,10 +82,13 @@
       "description": "Uploaded image file backup and metadata",
       "type": "object",
       "properties": {
-        "filename": { "type": "string" },
-        "contentType": { "type": "string" },
-        "base64": { "type": "string" },
-        "createdAt": { "type": "string" }
+        "filename": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "contentType": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "base64": { "type": "string", "maxLength": 900000 },
+        "size": { "type": "number" },
+        "isChunked": { "type": "boolean" },
+        "totalChunks": { "type": "number" },
+        "createdAt": { "type": "string", "maxLength": 64 }
       },
       "required": ["filename", "contentType"]
     }

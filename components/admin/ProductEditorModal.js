@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react';
 import ExcelSpecificationsGrid from './ExcelSpecificationsGrid';
-import ImageUploadButton from './ImageUploadButton';
 import ImageDropzone from './ImageDropzone';
-import { X, Plus, Trash2, Image as ImageIcon, Save, Check } from 'lucide-react';
+import { X, Trash2, Save } from 'lucide-react';
 
 export default function ProductEditorModal({
   product = null,
@@ -25,7 +24,6 @@ export default function ProductEditorModal({
   const [gallery, setGallery] = useState(
     product?.gallery || [product?.cardImage || 'https://picsum.photos/seed/vehicle/800/600']
   );
-  const [newGalleryUrl, setNewGalleryUrl] = useState('');
   const [highlights, setHighlights] = useState(product?.highlights || []);
   const [newHighlight, setNewHighlight] = useState('');
   const [specifications, setSpecifications] = useState(product?.specifications || []);
@@ -54,13 +52,6 @@ export default function ProductEditorModal({
 
   const handleRemoveHighlight = (idx) => {
     setHighlights(highlights.filter((_, i) => i !== idx));
-  };
-
-  const handleAddGalleryUrl = (e) => {
-    e.preventDefault();
-    if (!newGalleryUrl.trim()) return;
-    setGallery([...gallery, newGalleryUrl.trim()]);
-    setNewGalleryUrl('');
   };
 
   const handleRemoveGalleryUrl = (idx) => {
@@ -110,7 +101,7 @@ export default function ProductEditorModal({
       });
 
       if (!res.ok) {
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         throw new Error(data.error || 'Failed to save product');
       }
 
@@ -125,7 +116,12 @@ export default function ProductEditorModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-sm overflow-y-auto">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={isEditing ? 'Edit Vehicle' : 'Add New Vehicle'}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-sm overflow-y-auto"
+    >
       <div className="relative w-full max-w-5xl my-8 bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden text-slate-100">
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/70 shrink-0">
@@ -139,7 +135,9 @@ export default function ProductEditorModal({
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close modal"
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -149,12 +147,15 @@ export default function ProductEditorModal({
         {/* Modal Body */}
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto flex-1 space-y-6">
           {error && (
-            <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/40 text-red-300 text-xs font-medium">
+            <div
+              role="alert"
+              className="p-3 rounded-lg bg-red-500/20 border border-red-500/40 text-red-300 text-xs font-medium"
+            >
               {error}
             </div>
           )}
 
-          {/* Row 1: Name, Slug, Category, Availability, Position */}
+          {/* Row 1: Name, Category, Availability, Position */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="sm:col-span-2">
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">
@@ -232,7 +233,6 @@ export default function ProductEditorModal({
               />
             </div>
 
-            {/* Highlights (Quick Badges) */}
             <div className="lg:col-span-2 flex flex-col justify-between">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">
@@ -275,7 +275,8 @@ export default function ProductEditorModal({
                         <button
                           type="button"
                           onClick={() => handleRemoveHighlight(i)}
-                          className="text-slate-400 hover:text-red-400"
+                          aria-label={`Remove highlight ${h}`}
+                          className="text-slate-400 hover:text-red-400 cursor-pointer"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -285,9 +286,8 @@ export default function ProductEditorModal({
                 </div>
               </div>
 
-              {/* Featured toggle & slug info */}
               <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer select-none">
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={featured}
@@ -306,9 +306,10 @@ export default function ProductEditorModal({
             </div>
           </div>
 
-          {/* Section: The 2-Column, 30-Row Excel Specification Grid */}
+          {/* 30-Row Excel Specification Grid */}
           <div className="pt-2">
             <ExcelSpecificationsGrid
+              resetKey={product?._id || 'new'}
               specifications={specifications}
               onChange={setSpecifications}
             />
@@ -328,7 +329,7 @@ export default function ProductEditorModal({
             />
           </div>
 
-          {/* Photo Gallery: Drag-and-Drop + System Upload */}
+          {/* Photo Gallery */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
@@ -352,7 +353,6 @@ export default function ProductEditorModal({
               className="w-full"
             />
 
-            {/* Gallery Thumbnails List */}
             {gallery.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2.5 pt-2">
                 {gallery.map((img, i) => (
@@ -373,6 +373,7 @@ export default function ProductEditorModal({
                       <button
                         type="button"
                         onClick={() => handleRemoveGalleryUrl(i)}
+                        aria-label={`Remove gallery photo ${i + 1}`}
                         className="p-1.5 rounded-md bg-red-600/90 hover:bg-red-500 text-white transition-colors cursor-pointer shadow-lg"
                         title="Remove photo"
                       >

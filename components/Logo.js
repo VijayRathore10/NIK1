@@ -17,24 +17,24 @@ export default function Logo({
     >
       {/* Colored Logo (Navy Blue & Gold) - active when navbar is scrolled or on light backgrounds */}
       <div
-        className={`absolute inset-0 flex items-center transition-opacity duration-300 ease-in-out ${
+        className={`absolute inset-0 transition-opacity duration-300 ease-in-out ${
           isWhite ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
       >
         <Image
           src="/logo.png"
           alt="Nik Exports"
-          width={2247}
-          height={538}
+          fill
+          sizes="(max-width: 768px) 160px, 200px"
           priority={priority}
-          unoptimized
-          className="h-full w-auto object-contain drop-shadow-sm"
+          referrerPolicy="no-referrer"
+          className="object-contain object-left drop-shadow-sm"
         />
       </div>
 
       {/* White Logo - active when transparent navbar is at top or in dark footer */}
       <div
-        className={`absolute inset-0 flex items-center transition-opacity duration-300 ease-in-out ${
+        className={`absolute inset-0 transition-opacity duration-300 ease-in-out ${
           isWhite ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
       >
@@ -42,38 +42,24 @@ export default function Logo({
           <Image
             src="/white-logo.png"
             alt="Nik Exports"
-            width={2247}
-            height={538}
+            fill
+            sizes="(max-width: 768px) 160px, 200px"
             priority={priority}
-            unoptimized
+            referrerPolicy="no-referrer"
             onError={() => setWhiteImgError(true)}
-            className="h-full w-auto object-contain drop-shadow-md"
+            className="object-contain object-left drop-shadow-md"
           />
         ) : (
           <Image
             src="/logo.png"
             alt="Nik Exports"
-            width={2247}
-            height={538}
+            fill
+            sizes="(max-width: 768px) 160px, 200px"
             priority={priority}
-            unoptimized
-            className="h-full w-auto object-contain drop-shadow-md brightness-0 invert"
+            referrerPolicy="no-referrer"
+            className="object-contain object-left drop-shadow-md brightness-0 invert"
           />
         )}
-      </div>
-
-      {/* Invisible layout anchor keeping the container sized exactly to intrinsic aspect ratio */}
-      <div className="h-full w-auto invisible pointer-events-none opacity-0 select-none flex items-center">
-        <Image
-          src="/logo.png"
-          alt=""
-          width={2247}
-          height={538}
-          priority={false}
-          unoptimized
-          aria-hidden="true"
-          className="h-full w-auto object-contain opacity-0"
-        />
       </div>
     </div>
   );

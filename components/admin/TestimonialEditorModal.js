@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import ImageUploadButton from './ImageUploadButton';
 import ImageDropzone from './ImageDropzone';
-import { X, Save, Trash2, Plus, Image as ImageIcon } from 'lucide-react';
+import { X, Save, Trash2 } from 'lucide-react';
 
 export default function TestimonialEditorModal({ testimonial = null, onClose, onSave }) {
   const isEditing = Boolean(testimonial?._id);
@@ -16,23 +15,11 @@ export default function TestimonialEditorModal({ testimonial = null, onClose, on
   const [photos, setPhotos] = useState(
     testimonial?.photos || ['https://picsum.photos/seed/customer/800/800']
   );
-  const [newPhotoUrl, setNewPhotoUrl] = useState('');
   const [order, setOrder] = useState(
     testimonial?.order !== undefined && testimonial?.order !== null ? testimonial.order : ''
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-
-  const handleAddPhoto = (e) => {
-    e.preventDefault();
-    if (!newPhotoUrl.trim()) return;
-    if (photos.length >= 4) {
-      alert('Maximum 4 photos allowed per testimonial');
-      return;
-    }
-    setPhotos([...photos, newPhotoUrl.trim()]);
-    setNewPhotoUrl('');
-  };
 
   const handleRemovePhoto = (idx) => {
     setPhotos(photos.filter((_, i) => i !== idx));
@@ -66,7 +53,7 @@ export default function TestimonialEditorModal({ testimonial = null, onClose, on
       });
 
       if (!res.ok) {
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         throw new Error(data.error || 'Failed to save testimonial');
       }
 
@@ -81,9 +68,13 @@ export default function TestimonialEditorModal({ testimonial = null, onClose, on
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm select-none">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={isEditing ? 'Edit Client Testimonial' : 'Add New Client Testimonial'}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+    >
       <div className="relative w-full max-w-xl bg-[#131D2F] border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden text-slate-100 flex flex-col max-h-[92vh]">
-        {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60 shrink-0">
           <div>
             <h3 className="text-base font-bold text-white uppercase tracking-wider">
@@ -94,17 +85,21 @@ export default function TestimonialEditorModal({ testimonial = null, onClose, on
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close modal"
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
           {error && (
-            <div className="p-3 rounded-lg bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-medium">
+            <div
+              role="alert"
+              className="p-3 rounded-lg bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-medium"
+            >
               {error}
             </div>
           )}
@@ -169,6 +164,9 @@ export default function TestimonialEditorModal({ testimonial = null, onClose, on
                   multiple={true}
                   value={photos}
                   onChange={(newPhotos) => {
+                    if (newPhotos.length > 4) {
+                      setError('Maximum 4 photos allowed per testimonial.');
+                    }
                     setPhotos(newPhotos.slice(0, 4));
                   }}
                   helperText="Drag & drop delivery photos or click to browse (up to 4)"
@@ -188,6 +186,7 @@ export default function TestimonialEditorModal({ testimonial = null, onClose, on
                   <button
                     type="button"
                     onClick={() => handleRemovePhoto(i)}
+                    aria-label={`Remove photo ${i + 1}`}
                     className="absolute top-1.5 right-1.5 p-1 rounded-md bg-black/70 hover:bg-red-600 text-white transition-colors cursor-pointer"
                     title="Remove Photo"
                   >
@@ -220,7 +219,6 @@ export default function TestimonialEditorModal({ testimonial = null, onClose, on
             </div>
           </div>
 
-          {/* Footer */}
           <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
             <button
               type="button"

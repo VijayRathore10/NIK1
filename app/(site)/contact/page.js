@@ -1,17 +1,24 @@
 import InquiryForm from '@/components/InquiryForm';
 import { getSiteSettings } from '@/lib/data';
-import { Mail, Phone, MapPin, Clock, ShieldCheck } from 'lucide-react';
+import { DEFAULT_SITE_SETTINGS } from '@/lib/validation';
+import { Mail, Phone, MapPin, ShieldCheck } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 300;
 
 export const metadata = {
   title: 'Request a Quote',
-  description: 'Request a customized FOB/CIF export quotation for commercial vehicles and machinery.',
+  description:
+    'Request a customized FOB/CIF export quotation from NIK EXPORTS for commercial vehicles, buses, and heavy machinery.',
+  alternates: { canonical: '/contact' },
 };
 
 export default async function ContactPage() {
   const settings = await getSiteSettings();
+
+  const contactEmail = settings?.contactEmail || DEFAULT_SITE_SETTINGS.contactEmail;
+  const contactPhone = settings?.contactPhone || DEFAULT_SITE_SETTINGS.contactPhone;
+  const contactAddress = settings?.address || DEFAULT_SITE_SETTINGS.address;
+  const telHref = `tel:${contactPhone.replace(/[^+\d]/g, '')}`;
 
   return (
     <section className="mx-auto max-w-7xl px-5 md:px-8 pt-28 md:pt-32 pb-20">
@@ -39,10 +46,10 @@ export default async function ContactPage() {
                     Export Sales Desk
                   </span>
                   <a
-                    href={`mailto:${settings?.contactEmail || 'info@ssgmotors.com'}`}
+                    href={`mailto:${contactEmail}`}
                     className="font-medium text-[#102035] hover:text-[#B69255] transition-colors"
                   >
-                    {settings?.contactEmail || 'info@ssgmotors.com'}
+                    {contactEmail}
                   </a>
                 </div>
               </div>
@@ -56,10 +63,10 @@ export default async function ContactPage() {
                     Phone / WhatsApp Direct
                   </span>
                   <a
-                    href={`tel:${settings?.contactPhone || '+971506988527'}`}
+                    href={telHref}
                     className="font-medium text-[#102035] hover:text-[#B69255] transition-colors"
                   >
-                    {settings?.contactPhone || '+971 50 698 8527'}
+                    {contactPhone}
                   </a>
                 </div>
               </div>
@@ -73,8 +80,7 @@ export default async function ContactPage() {
                     Headquarters &amp; Export Office
                   </span>
                   <p className="font-medium text-[#102035] text-sm leading-relaxed">
-                    {settings?.address ||
-                      'SevenSeas Global Trading FZ LLC, Compass Building, Al Shohada Road, AL Hamra Industrial Zone-FZ, Ras Al Khaimah, United Arab Emirates'}
+                    {contactAddress}
                   </p>
                 </div>
               </div>

@@ -11,15 +11,17 @@ import {
   Link as LinkIcon,
   Image as ImageIcon,
 } from 'lucide-react';
+import { sanitizeUrl } from '@/lib/validation';
 
-// Safe in-browser image optimization: scales down 10MB+ images to <=1920px WebP
+const MAX_UPLOAD_BYTES = 8 * 1024 * 1024; // 8 MB server limit
+const RASTER_EXT_REGEX = /\.(png|jpe?g|webp|gif|heic|avif|bmp)$/i;
+
+// Safe in-browser image optimization: scales down large raster images to <=1920px WebP
 async function optimizeImageForUpload(file, maxWidth = 1920, quality = 0.88) {
-  // If SVG or GIF, preserve exact format
-  if (file.type === 'image/svg+xml' || file.type === 'image/gif') {
+  if (file.type === 'image/gif') {
     return file;
   }
 
-  // If already small (< 300KB), return as is
   if (file.size < 300 * 1024) {
     return file;
   }
@@ -55,7 +57,6 @@ async function optimizeImageForUpload(file, maxWidth = 1920, quality = 0.88) {
                       const optimizedFile = new File([blob], cleanName, { type: 'image/webp' });
                       resolve(optimizedFile);
                     } catch {
-                      // Older browser fallback if new File() fails
                       blob.name = cleanName;
                       resolve(blob);
                     }
@@ -86,13 +87,18 @@ async function optimizeImageForUpload(file, maxWidth = 1920, quality = 0.88) {
 
 export async function uploadSingleOrMultipleFiles(fileList, onProgress) {
   const files = Array.from(fileList).filter((f) => {
-    const isImage = (f.type && f.type.startsWith('image/')) ||
-      /\.(png|jpe?g|webp|gif|svg|heic|avif|bmp)$/i.test(f.name || '');
-    return isImage;
+    const isSvg =
+      f.type === 'image/svg+xml' || /\.svg$/i.test(f.name || '');
+    if (isSvg) return false;
+    const isRaster =
+      (f.type && f.type.startsWith('image/')) || RASTER_EXT_REGEX.test(f.name || '');
+    return isRaster;
   });
 
   if (files.length === 0) {
-    throw new Error('Please select valid image files (PNG, JPG, WEBP, GIF, SVG).');
+    throw new Error(
+      'Please select valid raster image files (JPG, PNG, WEBP, GIF, AVIF, HEIC). SVG files are not allowed.'
+    );
   }
 
   const uploadedUrls = [];
@@ -104,6 +110,12 @@ export async function uploadSingleOrMultipleFiles(fileList, onProgress) {
     }
 
     const optimized = await optimizeImageForUpload(file);
+
+    if (optimized.size > MAX_UPLOAD_BYTES) {
+      throw new Error(
+        `"${file.name}" exceeds the 8 MB maximum image size. Please resize or compress it first.`
+      );
+    }
 
     if (onProgress) {
       onProgress(`Uploading ${i + 1} of ${files.length}...`);
@@ -118,7 +130,7 @@ export async function uploadSingleOrMultipleFiles(fileList, onProgress) {
       body: formData,
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
       throw new Error(data.error || 'Failed to upload image');
     }
@@ -134,7 +146,7 @@ export async function uploadSingleOrMultipleFiles(fileList, onProgress) {
 }
 
 export default function ImageDropzone({
-  value, // string (url) if multiple=false, or array of strings if multiple=true
+  value,
   onChange,
   multiple = false,
   label = '',
@@ -174,7 +186,6 @@ export default function ImageDropzone({
         setSuccess(true);
         setTimeout(() => setSuccess(false), 2500);
       } catch (err) {
-        console.error('Dropzone upload error:', err);
         setError(err.message || 'Upload failed. Please try again.');
         setTimeout(() => setError(''), 5000);
       } finally {
@@ -203,7 +214,6 @@ export default function ImageDropzone({
   const handleDragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // Only turn off if leaving the root drop zone container
     if (e.currentTarget.contains(e.relatedTarget)) return;
     setIsDragging(false);
   };
@@ -219,12 +229,17 @@ export default function ImageDropzone({
 
   const handleManualUrlSubmit = (e) => {
     e?.preventDefault();
-    if (!manualUrlInput.trim()) return;
+    const safeUrl = sanitizeUrl(manualUrlInput);
+    if (!safeUrl) {
+      setError('Please enter a valid http(s):// or relative / image URL.');
+      setTimeout(() => setError(''), 4000);
+      return;
+    }
     if (multiple) {
       const currentList = Array.isArray(value) ? value : [];
-      onChange?.([...currentList, manualUrlInput.trim()]);
+      onChange?.([...currentList, safeUrl]);
     } else {
-      onChange?.(manualUrlInput.trim());
+      onChange?.(safeUrl);
     }
     setManualUrlInput('');
     setShowManualUrl(false);
@@ -252,7 +267,6 @@ export default function ImageDropzone({
         </div>
       )}
 
-      {/* Manual URL Input dropdown / toggle */}
       {showManualUrl && (
         <div className="flex gap-2 p-2 bg-slate-950/90 border border-slate-700 rounded-xl">
           <input
@@ -294,12 +308,11 @@ export default function ImageDropzone({
           type="file"
           ref={fileInputRef}
           onChange={(e) => processFiles(e.target.files)}
-          accept="image/png,image/jpeg,image/jpg,image/webp,image/gif,image/svg+xml,image/heic,image/avif"
+          accept="image/png,image/jpeg,image/jpg,image/webp,image/gif,image/heic,image/avif,image/bmp"
           multiple={multiple}
           className="hidden"
         />
 
-        {/* Uploading State Overlay */}
         {uploading && (
           <div className="absolute inset-0 z-20 bg-slate-950/90 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center">
             <Loader2 className="w-8 h-8 text-amber-400 animate-spin mb-2" />
@@ -312,7 +325,6 @@ export default function ImageDropzone({
           </div>
         )}
 
-        {/* Success State Overlay */}
         {success && !uploading && (
           <div className="absolute inset-0 z-20 bg-emerald-950/80 backdrop-blur-sm flex items-center justify-center gap-2 p-3 text-emerald-300 font-bold text-xs">
             <CheckCircle2 className="w-5 h-5 text-emerald-400" />
@@ -320,7 +332,6 @@ export default function ImageDropzone({
           </div>
         )}
 
-        {/* Single Image Display with Hover Overlay */}
         {hasSingleValue && !isDragging ? (
           <div className="relative w-full h-full flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -333,7 +344,6 @@ export default function ImageDropzone({
               }}
             />
 
-            {/* Hover Actions Bar */}
             <div className="absolute inset-0 bg-slate-950/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-2 p-4 text-center">
               <span className="text-xs font-bold text-white flex items-center gap-1.5 bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-700 shadow-md">
                 <RefreshCw className="w-3.5 h-3.5 text-amber-400" />
@@ -357,7 +367,6 @@ export default function ImageDropzone({
             </div>
           </div>
         ) : (
-          /* Empty / Multiple Drop Zone Placeholder */
           <div className="flex flex-col items-center justify-center p-4 text-center space-y-2">
             <div
               className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-200 ${
@@ -378,8 +387,7 @@ export default function ImageDropzone({
                   : 'Drag & drop photo here, or click to upload'}
               </p>
               <p className="text-[11px] text-slate-400 mt-0.5">
-                {helperText ||
-                  'Upload directly from your computer or phone (JPG, PNG, WEBP, GIF)'}
+                {helperText || 'JPG, PNG, WEBP, GIF, AVIF (max 8 MB per image)'}
               </p>
             </div>
 
@@ -393,9 +401,11 @@ export default function ImageDropzone({
         )}
       </div>
 
-      {/* Error Message */}
       {error && (
-        <div className="p-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-medium flex items-center gap-2">
+        <div
+          role="alert"
+          className="p-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-medium flex items-center gap-2"
+        >
           <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
           <span>{error}</span>
         </div>

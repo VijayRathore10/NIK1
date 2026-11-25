@@ -2,52 +2,192 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Default deny rule for unlisted paths
+    // Global safety net: deny all unmatched paths
     match /{document=**} {
       allow read, write: if false;
     }
 
+    // Reusable validation primitives
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidImageId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-.]+$');
+    }
+
+    function optionalString(data, field, maxLen) {
+      return !(field in data) || data[field] == null || (data[field] is string && data[field].size() <= maxLen);
+    }
+
+    function optionalNumber(data, field) {
+      return !(field in data) || data[field] == null || data[field] is number;
+    }
+
+    function isValidProduct(data) {
+      return data.keys().hasAll(['name', 'slug']) &&
+        data.keys().hasOnly([
+          '_id', 'name', 'slug', 'category', 'cardImage', 'gallery',
+          'highlights', 'specifications', 'description', 'availability',
+          'featured', 'order', 'updatedAt', '_createdAt', '_updatedAt'
+        ]) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 160 &&
+        data.slug is string && data.slug.size() >= 1 && data.slug.size() <= 120 &&
+        optionalString(data, '_id', 128) &&
+        optionalString(data, 'cardImage', 2048) &&
+        optionalString(data, 'description', 5000) &&
+        optionalString(data, 'availability', 80) &&
+        optionalString(data, 'updatedAt', 64) &&
+        optionalString(data, '_createdAt', 64) &&
+        optionalString(data, '_updatedAt', 64) &&
+        optionalNumber(data, 'order') &&
+        (!('featured' in data) || data.featured is bool) &&
+        (!('category' in data) || data.category is map || (data.category is string && data.category.size() <= 120)) &&
+        (!('gallery' in data) || (data.gallery is list && data.gallery.size() <= 25)) &&
+        (!('highlights' in data) || (data.highlights is list && data.highlights.size() <= 20)) &&
+        (!('specifications' in data) || (data.specifications is list && data.specifications.size() <= 30));
+    }
+
+    function isValidCategory(data) {
+      return data.keys().hasAll(['title', 'slug']) &&
+        data.keys().hasOnly(['_id', 'title', 'slug', 'image', 'order']) &&
+        data.title is string && data.title.size() >= 1 && data.title.size() <= 100 &&
+        data.slug is string && data.slug.size() >= 1 && data.slug.size() <= 120 &&
+        optionalString(data, '_id', 128) &&
+        optionalString(data, 'image', 2048) &&
+        optionalNumber(data, 'order');
+    }
+
+    function isValidTestimonial(data) {
+      return data.keys().hasAll(['customerName', 'quote']) &&
+        data.keys().hasOnly(['_id', 'customerName', 'customerDetail', 'quote', 'photos', 'order']) &&
+        data.customerName is string && data.customerName.size() >= 1 && data.customerName.size() <= 120 &&
+        data.quote is string && data.quote.size() >= 1 && data.quote.size() <= 2000 &&
+        optionalString(data, '_id', 128) &&
+        optionalString(data, 'customerDetail', 160) &&
+        optionalNumber(data, 'order') &&
+        (!('photos' in data) || (data.photos is list && data.photos.size() <= 4));
+    }
+
+    function isValidSiteSettings(data) {
+      return data.keys().hasOnly([
+          'tagline', 'aboutText', 'contactEmail', 'contactPhone',
+          'address', 'socialLinks', 'heroImages'
+        ]) &&
+        optionalString(data, 'tagline', 200) &&
+        optionalString(data, 'aboutText', 2500) &&
+        optionalString(data, 'contactEmail', 254) &&
+        optionalString(data, 'contactPhone', 40) &&
+        optionalString(data, 'address', 400) &&
+        (!('socialLinks' in data) || data.socialLinks is map) &&
+        (!('heroImages' in data) || (data.heroImages is list && data.heroImages.size() <= 10));
+    }
+
+    function isValidInquiry(data) {
+      return data.keys().hasAll(['name', 'email', 'message']) &&
+        data.keys().hasOnly(['_id', 'name', 'email', 'phone', 'message', 'product', 'submittedAt']) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 120 &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 254 &&
+        data.message is string && data.message.size() >= 1 && data.message.size() <= 3000 &&
+        optionalString(data, '_id', 128) &&
+        optionalString(data, 'phone', 40) &&
+        optionalString(data, 'product', 200) &&
+        optionalString(data, 'submittedAt', 64);
+    }
+
+    function isValidUploadedImage(data) {
+      return data.keys().hasAll(['filename', 'contentType']) &&
+        data.keys().hasOnly(['filename', 'contentType', 'base64', 'size', 'isChunked', 'totalChunks', 'createdAt']) &&
+        data.filename is string && data.filename.size() >= 1 && data.filename.size() <= 128 &&
+        data.contentType is string && data.contentType.size() >= 1 && data.contentType.size() <= 64 &&
+        data.contentType != 'image/svg+xml' &&
+        optionalString(data, 'base64', 900000) &&
+        optionalNumber(data, 'size') &&
+        (!('isChunked' in data) || data.isChunked is bool) &&
+        optionalNumber(data, 'totalChunks') &&
+        optionalString(data, 'createdAt', 64);
+    }
+
+    function isValidUploadedChunk(data) {
+      return data.keys().hasAll(['index', 'chunk']) &&
+        data.keys().hasOnly(['index', 'chunk']) &&
+        data.index is number && data.index >= 0 && data.index <= 25 &&
+        data.chunk is string && data.chunk.size() <= 750000;
+    }
+
+    // NOTE: Because Next.js API routes currently write via the Firebase Web SDK
+    // without Firebase Auth sign-in (admin sessions are verified in Next.js routes
+    // using ADMIN_SESSION_SECRET), these rules enforce strict document schemas,
+    // path-ID validation, field-length caps, and immutability without breaking
+    // /api/admin/* or /api/inquiry. To fully restrict direct Firestore writes and
+    // inquiry reads at the database layer, migrate admin authentication to
+    // Firebase Auth (Google Sign-In) or server-side Firebase Admin SDK (Blaze plan).
+
     // Products / Commercial Vehicles catalog
     match /products/{productId} {
-      allow read, write: if true;
+      allow list: if true;
+      allow get: if isValidId(productId);
+      allow create, update: if isValidId(productId) && isValidProduct(request.resource.data);
+      allow delete: if isValidId(productId);
     }
 
     // Categories
     match /categories/{categoryId} {
-      allow read, write: if true;
+      allow list: if true;
+      allow get: if isValidId(categoryId);
+      allow create, update: if isValidId(categoryId) && isValidCategory(request.resource.data);
+      allow delete: if isValidId(categoryId);
     }
 
     // Testimonials
     match /testimonials/{testimonialId} {
-      allow read, write: if true;
+      allow list: if true;
+      allow get: if isValidId(testimonialId);
+      allow create, update: if isValidId(testimonialId) && isValidTestimonial(request.resource.data);
+      allow delete: if isValidId(testimonialId);
     }
 
-    // Site Settings
+    // Site Settings (singleton global doc only)
     match /siteSettings/{settingId} {
-      allow read, write: if true;
+      allow get: if settingId == 'global';
+      allow list: if false;
+      allow create, update: if settingId == 'global' && isValidSiteSettings(request.resource.data);
+      allow delete: if false;
     }
 
-    // Inquiries (Buyer leads)
+    // Inquiries (Buyer leads — immutable after creation)
     match /inquiries/{inquiryId} {
-      allow read, write: if true;
+      allow list: if true;
+      allow get: if isValidId(inquiryId);
+      allow create: if isValidId(inquiryId) && isValidInquiry(request.resource.data);
+      allow update: if false;
+      allow delete: if isValidId(inquiryId);
     }
 
-    // Admins collection
+    // Unused admins collection — locked down completely
     match /admins/{adminId} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
 
-    // Uploaded Images
+    // Uploaded Images & Chunks
     match /uploadedImages/{imageId} {
-      allow read, write: if true;
-      match /{allChildren=**} {
-        allow read, write: if true;
+      allow get: if isValidImageId(imageId);
+      allow list: if false;
+      allow create, update: if isValidImageId(imageId) && isValidUploadedImage(request.resource.data);
+      allow delete: if isValidImageId(imageId);
+
+      match /chunks/{chunkId} {
+        allow list: if isValidImageId(imageId);
+        allow get: if isValidImageId(imageId) && isValidId(chunkId);
+        allow create, update: if isValidImageId(imageId) && isValidId(chunkId) && isValidUploadedChunk(request.resource.data);
+        allow delete: if isValidImageId(imageId) && isValidId(chunkId);
       }
     }
 
-    // Health / Connection test
+    // Health / Connection test (read-only)
     match /test/{testId} {
-      allow read, write: if true;
+      allow get: if testId == 'connection';
+      allow list, write: if false;
     }
   }
 }

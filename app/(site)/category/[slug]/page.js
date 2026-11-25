@@ -2,21 +2,31 @@ import ProductCard from '@/components/ProductCard';
 import { getCategoryBySlug, getProductsByCategory, getCategories } from '@/lib/data';
 import { notFound } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 300;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const categories = await getCategories();
-  return categories.map((c) => ({ slug: c.slug }));
+  return (categories || [])
+    .filter((c) => c?.slug)
+    .map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const category = await getCategoryBySlug(slug);
   if (!category) return { title: 'Category' };
+  const description = `Explore export-ready ${category.title} supplied worldwide by NIK EXPORTS with Pre-Shipment Inspection and CIF/FOB sea freight.`;
   return {
     title: category.title,
+    description,
+    alternates: { canonical: `/category/${category.slug}` },
+    openGraph: {
+      title: `${category.title} | NIK EXPORTS`,
+      description,
+      url: `/category/${category.slug}`,
+      images: category.image ? [{ url: category.image, alt: category.title }] : undefined,
+    },
   };
 }
 
@@ -39,7 +49,7 @@ export default async function CategoryPage({ params }) {
       {products.length === 0 ? (
         <p className="text-graphite">No products listed in this category yet.</p>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {products.map((p) => (
             <ProductCard key={p._id} product={p} />
           ))}

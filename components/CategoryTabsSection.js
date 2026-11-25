@@ -1,8 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import ProductCard from './ProductCard';
+
+const MACHINERY_SLUGS = new Set([
+  'equipment',
+  'equipments',
+  'heavy-equipment',
+  'machineries',
+  'machinery',
+]);
 
 export default function CategoryTabsSection({ categories = [], products = [] }) {
   const [selectedSlug, setSelectedSlug] = useState(null);
@@ -10,35 +18,46 @@ export default function CategoryTabsSection({ categories = [], products = [] }) 
   const activeSlug =
     selectedSlug || (categories.length > 0 ? categories[0].slug : 'trucks');
 
-  const activeCategory =
-    categories.find(
-      (c) => c.slug?.toLowerCase() === activeSlug?.toLowerCase()
-    ) || categories[0];
+  const activeCategory = useMemo(
+    () =>
+      categories.find(
+        (c) => c.slug?.toLowerCase() === activeSlug?.toLowerCase()
+      ) || categories[0],
+    [categories, activeSlug]
+  );
 
-  const filteredProducts = products.filter((p) => {
-    const pSlug = (typeof p.category === 'string' ? p.category : p.category?.slug)?.toLowerCase();
-    const pTitle = (typeof p.category === 'object' ? p.category?.title : '')?.toLowerCase();
+  const sortedFilteredProducts = useMemo(() => {
     const active = activeSlug?.toLowerCase();
-    
-    if (!active) return true;
-    if (pSlug === active || pTitle === active) return true;
-    
-    // Normalize machinery / equipment synonyms
-    const isMachinery = (s) => ['equipment', 'equipments', 'heavy-equipment', 'machineries', 'machinery'].includes(s);
-    if (isMachinery(active) && (isMachinery(pSlug) || isMachinery(pTitle))) return true;
+    const isActiveMachinery = MACHINERY_SLUGS.has(active);
 
-    return false;
-  });
+    const filtered = products.filter((p) => {
+      const pSlug = (
+        typeof p.category === 'string' ? p.category : p.category?.slug
+      )?.toLowerCase();
+      const pTitle = (
+        typeof p.category === 'object' ? p.category?.title : ''
+      )?.toLowerCase();
 
-  // Sort products basis position numbering system (1, 2, 3...)
-  const sortedFilteredProducts = [...filteredProducts].sort((a, b) => {
-    const hasA = a.order !== undefined && a.order !== null && a.order !== '';
-    const hasB = b.order !== undefined && b.order !== null && b.order !== '';
-    const orderA = hasA ? Number(a.order) : Infinity;
-    const orderB = hasB ? Number(b.order) : Infinity;
-    if (orderA !== orderB) return orderA - orderB;
-    return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
-  });
+      if (!active) return true;
+      if (pSlug === active || pTitle === active) return true;
+      if (
+        isActiveMachinery &&
+        (MACHINERY_SLUGS.has(pSlug) || MACHINERY_SLUGS.has(pTitle))
+      ) {
+        return true;
+      }
+      return false;
+    });
+
+    return filtered.sort((a, b) => {
+      const hasA = a.order !== undefined && a.order !== null && a.order !== '';
+      const hasB = b.order !== undefined && b.order !== null && b.order !== '';
+      const orderA = hasA ? Number(a.order) : Infinity;
+      const orderB = hasB ? Number(b.order) : Infinity;
+      if (orderA !== orderB) return orderA - orderB;
+      return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+    });
+  }, [products, activeSlug]);
 
   return (
     <section id="catalog" className="w-full bg-[#F3F6FA] border-y border-line/70 py-20 md:py-28 scroll-mt-20">
@@ -55,14 +74,14 @@ export default function CategoryTabsSection({ categories = [], products = [] }) 
         {/* Horizontal Category Selector Tabs */}
         <div className="mb-10">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 md:gap-3.5 p-2.5 bg-white rounded-xl border border-gray-300/80 shadow-md">
-            {categories.map((cat, idx) => {
+            {categories.map((cat) => {
               const isActive = cat.slug === activeSlug;
-              const count = products.filter((p) => p.category?.slug === cat.slug).length;
-              const num = String(idx + 1).padStart(2, '0');
 
               return (
                 <button
                   key={cat._id || cat.slug}
+                  type="button"
+                  aria-pressed={isActive}
                   onClick={() => setSelectedSlug(cat.slug)}
                   className={`flex items-center justify-center px-4 py-4 rounded-lg transition-all duration-200 text-center cursor-pointer ${
                     isActive
@@ -86,7 +105,7 @@ export default function CategoryTabsSection({ categories = [], products = [] }) 
           </h3>
         </div>
 
-        {/* Products Grid - 2/2/2 layout (Total 6 elements: 2 columns per row or 3x2) */}
+        {/* Products Grid */}
         {sortedFilteredProducts.length === 0 ? (
           <div className="bg-white border border-line rounded-xl p-12 text-center my-6 shadow-sm">
             <p className="text-graphite font-display text-lg mb-2">

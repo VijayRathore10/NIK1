@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { resolveImage } from '@/lib/image';
 
@@ -59,7 +58,7 @@ const SLIDE_DEFINITIONS = [
 ];
 
 function buildSlideData(img, idx, defaultTagline) {
-  const url = resolveImage(img, 1920);
+  const url = resolveImage(img);
   const ref = img?.asset?._ref || img?.asset?._id || '';
   const filename = img?.asset?.originalFilename || '';
 
@@ -80,28 +79,28 @@ function buildSlideData(img, idx, defaultTagline) {
 const DEFAULT_SLIDES = [
   {
     id: 'default-1',
-    url: 'https://picsum.photos/seed/ssg-heavy-haulage-1610/1920/1200',
+    url: 'https://picsum.photos/seed/nik-heavy-haulage-1610/1920/1200',
     title: 'COMMERCIAL VEHICLES & FLEET EXPORT',
     subtitle: 'Prime movers, multi-axle cargo haulers, and heavy tippers certified for immediate worldwide port dispatch.',
     category: 'Commercial Trucks',
   },
   {
     id: 'default-2',
-    url: 'https://picsum.photos/seed/ssg-machinery-1610/1920/1200',
+    url: 'https://picsum.photos/seed/nik-machinery-1610/1920/1200',
     title: 'EARTHMOVING & HEAVY MACHINERY',
     subtitle: 'High-performance hydraulic excavators, wheel loaders, and road equipment inspected to international standards.',
     category: 'Heavy Equipment',
   },
   {
     id: 'default-3',
-    url: 'https://picsum.photos/seed/ssg-transit-1610/1920/1200',
+    url: 'https://picsum.photos/seed/nik-transit-1610/1920/1200',
     title: 'PASSENGER BUSES & STAFF COACHES',
     subtitle: 'Transit fleets, intercity luxury coaches, and airport shuttles built for demanding climate and terrain.',
     category: 'Passenger Transit',
   },
   {
     id: 'default-4',
-    url: 'https://picsum.photos/seed/ssg-agricultural-1610/1920/1200',
+    url: 'https://picsum.photos/seed/nik-agricultural-1610/1920/1200',
     title: 'AGRICULTURAL TRACTORS & IMPLEMENTS',
     subtitle: 'Modern 4WD tractors from 45HP to 110HP with complete implement packages for large-scale farming.',
     category: 'Agricultural Machinery',
@@ -109,21 +108,25 @@ const DEFAULT_SLIDES = [
 ];
 
 export default function HeroSlider({ images, tagline }) {
-  const [slides, setSlides] = useState(() => {
-    if (images && images.length > 0) {
+  const slides = useMemo(() => {
+    if (Array.isArray(images) && images.length > 0) {
       return images.map((img, idx) => buildSlideData(img, idx, tagline));
     }
     return DEFAULT_SLIDES;
-  });
-
-  useEffect(() => {
-    if (images && images.length > 0) {
-      setSlides(images.map((img, idx) => buildSlideData(img, idx, tagline)));
-    }
   }, [images, tagline]);
 
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setPrefersReducedMotion(mq.matches);
+    update();
+    mq.addEventListener?.('change', update);
+    return () => mq.removeEventListener?.('change', update);
+  }, []);
 
   const next = useCallback(() => {
     setIndex((i) => (i + 1) % slides.length);
@@ -134,12 +137,13 @@ export default function HeroSlider({ images, tagline }) {
   }, [slides.length]);
 
   useEffect(() => {
-    if (slides.length < 2 || isPaused) return;
+    if (slides.length < 2 || isPaused || prefersReducedMotion) return;
     const interval = setInterval(next, 6500);
     return () => clearInterval(interval);
-  }, [next, slides.length, isPaused]);
+  }, [next, slides.length, isPaused, prefersReducedMotion]);
 
-  const currentSlide = slides[index] || slides[0];
+  const safeIndex = index % slides.length;
+  const currentSlide = slides[safeIndex] || slides[0];
 
   return (
     <section
@@ -153,8 +157,8 @@ export default function HeroSlider({ images, tagline }) {
         <div
           key={slide.id}
           className="absolute inset-0 transition-opacity duration-700 ease-in-out"
-          style={{ opacity: i === index ? 1 : 0 }}
-          aria-hidden={i !== index}
+          style={{ opacity: i === safeIndex ? 1 : 0 }}
+          aria-hidden={i !== safeIndex}
         >
           <Image
             src={slide.url}
@@ -165,7 +169,6 @@ export default function HeroSlider({ images, tagline }) {
             className="object-cover object-center transform scale-102 transition-transform duration-10000 ease-out"
             sizes="100vw"
           />
-          {/* Subtle gradient overlay for high contrast readability */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#0c141f]/85 via-[#0c141f]/50 to-transparent" />
         </div>
       ))}
@@ -175,13 +178,12 @@ export default function HeroSlider({ images, tagline }) {
         <div className="max-w-3xl">
           <AnimatePresence mode="wait">
             <motion.div
-              key={`slide-content-${index}-${currentSlide.title}`}
-              initial={{ opacity: 0, y: 14 }}
+              key={`slide-content-${safeIndex}-${currentSlide.title}`}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -14 }}
-              transition={{ duration: 0.45, ease: 'easeInOut' }}
+              exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -14 }}
+              transition={{ duration: prefersReducedMotion ? 0.05 : 0.45, ease: 'easeInOut' }}
             >
-              {/* Main Headline with Gold Highlights */}
               <h1 className="font-display text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-white leading-[1.1] drop-shadow-xl">
                 {currentSlide?.title?.split('&')[0]}{' '}
                 {currentSlide?.title?.includes('&') && (
@@ -191,7 +193,6 @@ export default function HeroSlider({ images, tagline }) {
                 )}
               </h1>
 
-              {/* Subtitle Description */}
               <p className="mt-3 md:mt-4 text-xs sm:text-sm md:text-base text-[#F3F1EA]/95 font-light leading-relaxed max-w-xl drop-shadow-md">
                 {currentSlide?.subtitle ||
                   tagline ||
@@ -199,24 +200,24 @@ export default function HeroSlider({ images, tagline }) {
               </p>
             </motion.div>
           </AnimatePresence>
-
-          {/* Hero CTA section removed */}
         </div>
       </div>
 
       {/* Slide Navigation Controls */}
       <button
+        type="button"
         onClick={prev}
         aria-label="Previous slide"
-        className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-black/40 hover:bg-[#B69255] hover:border-[#B69255] text-white border border-white/20 rounded-full flex items-center justify-center transition-all duration-200 backdrop-blur-sm cursor-pointer hidden md:flex"
+        className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-black/40 hover:bg-[#B69255] hover:border-[#B69255] text-white border border-white/20 rounded-full items-center justify-center transition-all duration-200 backdrop-blur-sm cursor-pointer hidden md:flex"
       >
         <ChevronLeft className="w-6 h-6" />
       </button>
 
       <button
+        type="button"
         onClick={next}
         aria-label="Next slide"
-        className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-black/40 hover:bg-[#B69255] hover:border-[#B69255] text-white border border-white/20 rounded-full flex items-center justify-center transition-all duration-200 backdrop-blur-sm cursor-pointer hidden md:flex"
+        className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-black/40 hover:bg-[#B69255] hover:border-[#B69255] text-white border border-white/20 rounded-full items-center justify-center transition-all duration-200 backdrop-blur-sm cursor-pointer hidden md:flex"
       >
         <ChevronRight className="w-6 h-6" />
       </button>
@@ -227,10 +228,11 @@ export default function HeroSlider({ images, tagline }) {
           {slides.map((s, i) => (
             <button
               key={`dot-${s.id}-${i}`}
+              type="button"
               onClick={() => setIndex(i)}
               aria-label={`Go to slide ${i + 1}`}
               className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                i === index ? 'w-7 bg-[#D5B57A]' : 'w-2 bg-white/40 hover:bg-white/70'
+                i === safeIndex ? 'w-7 bg-[#D5B57A]' : 'w-2 bg-white/40 hover:bg-white/70'
               }`}
             />
           ))}
@@ -239,4 +241,3 @@ export default function HeroSlider({ images, tagline }) {
     </section>
   );
 }
-
